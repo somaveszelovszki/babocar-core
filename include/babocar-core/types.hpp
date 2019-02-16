@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 namespace babocar {
+
 typedef float float32_t;
 typedef double float64_t;
 

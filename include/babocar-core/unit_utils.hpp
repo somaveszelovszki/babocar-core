@@ -4,9 +4,9 @@
 #include <babocar-core/units.hpp>
 
 namespace babocar {
-constexpr angle_t PI(radians(), 3.14159265358979323846);        	// Pi
-constexpr angle_t PI_2(radians(), 3.14159265358979323846 / 2.0); // Pi / 2
-constexpr angle_t PI_4(radians(), 3.14159265358979323846 / 4.0); // Pi / 4
+constexpr angle_t PI = radian_t(3.14159265358979323846);        	// Pi
+constexpr angle_t PI_2 = PI / 2; // Pi / 2
+constexpr angle_t PI_4 = PI / 4; // Pi / 4
 
 /* @brief Calculates sine of given angle.
  * @restrict Type of the result value must be arithmetic.
@@ -16,7 +16,7 @@ constexpr angle_t PI_4(radians(), 3.14159265358979323846 / 4.0); // Pi / 4
  **/
 template <typename T = float32_t, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 inline T sin(const angle_t& value) {
-    return static_cast<T>(sinf(value.get<radians>())) ;
+    return static_cast<T>(sinf(radian_t(value).get())) ;
 }
 
 /* @brief Calculates arc-sine of given value.
@@ -27,7 +27,7 @@ inline T sin(const angle_t& value) {
  **/
 template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 inline angle_t asin(const T& value) {
-    return angle_t::from<radians>(asinf(static_cast<float32_t>(value))) ;
+    return radian_t(asinf(static_cast<float32_t>(value))) ;
 }
 
 /* @brief Calculates cosine of given angle.
@@ -38,7 +38,7 @@ inline angle_t asin(const T& value) {
  **/
 template <typename T = float32_t, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 inline T cos(const angle_t& value) {
-    return static_cast<T>(cosf(value.get<radians>())) ;
+    return static_cast<T>(cosf(radian_t(value).get())) ;
 }
 
 /* @brief Calculates arc-cosine of given value.
@@ -49,7 +49,7 @@ inline T cos(const angle_t& value) {
  **/
 template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 inline angle_t acos(const T& value) {
-    return angle_t::from<radians>(acosf(static_cast<float32_t>(value))) ;
+    return radian_t(acosf(static_cast<float32_t>(value))) ;
 }
 
 /* @brief Calculates tangent of given angle.
@@ -60,7 +60,7 @@ inline angle_t acos(const T& value) {
  **/
 template <typename T = float32_t, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 inline T tan(const angle_t& value) {
-    return static_cast<T>(tanf(value.get<radians>()));
+    return static_cast<T>(tanf(radian_t(value).get()));
 }
 
 /* @brief Calculates arc-tangent of given value.
@@ -71,7 +71,7 @@ inline T tan(const angle_t& value) {
  **/
 template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 inline angle_t atan(const T& value) {
-    return angle_t::from<radians>(atanf(static_cast<float32_t>(value)));
+    return radian_t(atanf(static_cast<float32_t>(value)));
 }
 
 inline angle_t normalize360(angle_t value) {
@@ -160,10 +160,7 @@ inline bool isMultipleOf90(angle_t value, angle_t eps) {
  * @returns The length of the hypotenuse of the triangle.
  **/
 inline distance_t pythag(distance_t a, distance_t b) {
-    typedef distance_t::stored_unit_inst_t unit;
-    float32_t _a = a.get<unit>(), _b = b.get<unit>();
-
-    return distance_t::from<unit>(pythag(_a, _b));
+    return centimeter_t(pythag(centimeter_t(a).get(), centimeter_t(b).get()));
 }
 
 /* @brief Calculates vector length using the Pythagorean theory.
@@ -173,10 +170,7 @@ inline distance_t pythag(distance_t a, distance_t b) {
  * @returns The length of the vector.
  **/
 inline distance_t pythag(distance_t a, distance_t b, distance_t c) {
-    typedef distance_t::stored_unit_inst_t unit;
-    float32_t _a = a.get<unit>(), _b = b.get<unit>(), _c = c.get<unit>();
-
-    return distance_t::from<unit>(pythag(_a, _b, _c));
+    return centimeter_t(pythag(centimeter_t(a).get(), centimeter_t(b).get(), centimeter_t(c).get()));
 }
 
 inline angle_t straighten(angle_t angle, angle_t eps) {

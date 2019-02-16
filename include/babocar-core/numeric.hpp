@@ -6,6 +6,8 @@
 
 namespace babocar {
 
+static constexpr float32_t COMMON_EQ_ABS_EPS = 0.00001f;    // Default absolute epsilon for equality check.
+
 /**
  * @brief Gets minimum of the two values.
  * @param a The first value.
@@ -108,8 +110,6 @@ template <typename S, typename R>
 inline R map(const S& value, const S& fromLow, const S& fromHigh, const R& toLow, const R& toHigh) {
     return toLow + static_cast<R>((clamp(value, fromLow, fromHigh) - fromLow) * (toHigh - toLow) / (fromHigh - fromLow));
 }
-
-#define COMMON_EQ_ABS_EPS   0.00001f    // default absolute epsilon for equality check
 
 /**
  * @brief Checks if given value equals the reference with the default epsilon tolerance.

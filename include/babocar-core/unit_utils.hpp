@@ -3,7 +3,7 @@
 #include <babocar-core/numeric.hpp>
 #include <babocar-core/units.hpp>
 
-namespace babocar {
+namespace bcr {
 constexpr angle_t PI = radian_t(3.14159265358979323846);        	// Pi
 constexpr angle_t PI_2 = PI / 2; // Pi / 2
 constexpr angle_t PI_4 = PI / 4; // Pi / 4
@@ -186,5 +186,5 @@ inline angle_t straighten(angle_t angle, angle_t eps) {
 
     return angle;
 }
-} // namespace babocar
+} // namespace bcr
 

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <babocar-core/numeric.hpp>
 
-namespace babocar {
+namespace bcr {
 
 #define dimension_name(name) name, name ## 2, name ## 3
 
@@ -388,7 +388,7 @@ public:
     }
 
     bool isZero(dim_class eps = dim_class(COMMON_EQ_ABS_EPS)) const {
-        return babocar::isZero(this->value, eps.value);
+        return bcr::isZero(this->value, eps.value);
     }
 };
 } // namespace detail
@@ -459,5 +459,5 @@ create_div_unit_instance(mm_per_sec, second, mm_per_sec2);
 create_div_unit_instance(radian, second, rad_per_sec2);
 create_div_unit_instance(degree, second, deg_per_sec2);
 
-} // namespace babocar
+} // namespace bcr
 

@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <cmath>
 
-namespace babocar {
+namespace bcr {
 
 static constexpr float32_t COMMON_EQ_ABS_EPS = 0.00001f;    // Default absolute epsilon for equality check.
 
@@ -203,5 +203,5 @@ inline T powerOf(const T& value, uint32_t pow) {
     }
     return result;
 }
-} // namespace babocar
+} // namespace bcr
 

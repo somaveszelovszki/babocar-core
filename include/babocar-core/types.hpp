@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace babocar {
+namespace bcr {
 
 typedef float float32_t;
 typedef double float64_t;
@@ -34,7 +34,9 @@ enum class Status : uint32_t {
  * @param status
  * @return True if status is ok.
  */
-bool isOk(Status status);
+inline bool isOk(Status status) {
+    return status == Status::OK;
+}
 
 /** @brief Gets status as string.
  * @param status The status to convert to string.
@@ -67,4 +69,4 @@ enum class Sign : int32_t {
     NEUTRAL = 0,
     NEGATIVE = -1
 };
-} // namespace babocar
+} // namespace bcr

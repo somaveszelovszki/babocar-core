@@ -137,19 +137,6 @@ inline bool eq(const T& value, const T& ref, const T& eps) {
 }
 
 /**
- * @brief Checks if given value equals the reference with the default epsilon tolerance.
- * @restrict Type must be a dimension class.
- * @tparam T Numeric type of the value, the reference and the epsilon tolerance.
- * @param value The value to compare to the reference.
- * @param ref The reference.
- */
-template <typename dim_class_t>
-inline typename std::enable_if<dim_class_t::is_dim_class, bool>::type eq(const dim_class_t& value, const dim_class_t& ref) {
-    static constexpr dim_class_t eps(typename dim_class_t::stored_unit_inst_t(), COMMON_EQ_ABS_EPS);
-    return eq(value, ref, eps);
-}
-
-/**
  * @brief Checks if given value equals zero with the given epsilon tolerance.
  * @restrict Type must be arithmetic.
  * @tparam T Numeric type of the value, the reference and the epsilon tolerance.

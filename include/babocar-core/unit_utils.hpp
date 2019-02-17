@@ -8,6 +8,33 @@ constexpr angle_t PI = radian_t(3.14159265358979323846);        	// Pi
 constexpr angle_t PI_2 = PI / 2; // Pi / 2
 constexpr angle_t PI_4 = PI / 4; // Pi / 4
 
+/**
+ * @brief Checks if given value equals the reference with the default epsilon tolerance.
+ * @restrict Type must be a dimension class.
+ * @tparam T Numeric type of the value, the reference and the epsilon tolerance.
+ * @param value The value to compare to the reference.
+ * @param ref The reference.
+ */
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::dim == T2::dim, bool>::type eq(const T1& value, const T2& ref) {
+    return value.eq(ref);
+}
+
+template <typename T1, typename T2, typename T3>
+inline typename std::enable_if<T1::dim == T2::dim && T1::dim == T3::dim, bool>::type eq(const T1& value, const T2& ref, const T3& eps) {
+    return value.eq(ref, eps);
+}
+
+template <typename T>
+inline typename std::enable_if<T::is_dim_class, bool>::type isZero(const T& value) {
+    return value.isZero();
+}
+
+template <typename T, typename T_eps>
+inline typename std::enable_if<T::dim == T_eps::dim, bool>::type isZero(const T& value, const T_eps& eps) {
+    return value.isZero(eps);
+}
+
 /* @brief Calculates sine of given angle.
  * @restrict Type of the result value must be arithmetic.
  * @tparam T Type of the result value - 32-bit floating point number by default.

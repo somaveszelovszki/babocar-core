@@ -159,16 +159,18 @@ constexpr typename std::enable_if<from_unit_inst_t::dim == to_unit_inst_t::dim, 
 /* @brief Dimension class template. Used for basic types like time, distance, etc.
  * @tparam _dim The dimension.
  **/
-template <Dimension _dim, typename stored_unit_inst_t_ = unit_instance<_dim, Unit::one>, bool explicit_unit = false>
+template <Dimension _dim, typename unit_inst_t_ = unit_instance<_dim, Unit::one>, bool explicit_unit = false>
 class dim_class {
 public:
-    static constexpr bool is_dim_class = true;       // Indicates that class is an uns dimension class.
+    enum { is_dim_class = true };
     static constexpr Dimension dim = _dim;   // The dimension.
-    typedef stored_unit_inst_t_ stored_unit_inst_t;
-    static_assert(_dim == stored_unit_inst_t::dim, "Dimensions do not match!");  // Checks if the dimensions match.
+    typedef unit_inst_t_ unit_inst_t;
+    static_assert(_dim == unit_inst_t::dim, "Dimensions do not match!");  // Checks if the dimensions match.
 
 private:
-    template <Dimension dim2, typename stored_unit_inst_t2, bool explicit_unit2> friend class dim_class;
+    template <Dimension dim2, typename unit_inst_t2, bool explicit_unit2> friend class dim_class;
+    template <typename unit_inst_t2, bool explicit_unit2> using same_dim_class = dim_class<dim, unit_inst_t2, explicit_unit2>;
+    template <Dimension dim2, typename unit_inst_t2, bool explicit_unit2> using other_dim_class = dim_class<dim2, unit_inst_t2, explicit_unit2>;
 
     float32_t value;   // The stored value.
 
@@ -208,9 +210,9 @@ public:
      * @param [unnamed] The unit instance.
      * param _value The value given in the unit instance.
      **/
-    template <typename stored_unit_inst2, bool explicit_unit2>
-    constexpr dim_class(const dim_class<dim, stored_unit_inst2, explicit_unit2>& other)
-        : value(rescale_unit<stored_unit_inst2, stored_unit_inst_t>(other.value)) {}
+    template <typename unit_inst2, bool explicit_unit2>
+    constexpr dim_class(const dim_class<dim, unit_inst2, explicit_unit2>& other)
+        : value(rescale_unit<unit_inst2, unit_inst_t>(other.value)) {}
 
     /* @brief Adds two dimension class instances.
      * @param other The other dimension class instance.
@@ -368,7 +370,7 @@ public:
      * @returns The result dimension class instance.
      **/
     template <typename _dim_class2, typename _res_dim_class = dim_class<mul_dim<dim, _dim_class2::dim>::value,
-            mul_unit_instance<stored_unit_inst_t, typename _dim_class2::stored_unit_inst_t>>>
+            mul_unit_instance<unit_inst_t, typename _dim_class2::unit_inst_t>>>
     constexpr _res_dim_class operator*(const _dim_class2& other) const {
         return _res_dim_class(this->value * other.value, nullptr);
     }
@@ -378,7 +380,7 @@ public:
      * @returns The result dimension class instance.
      **/
     template <typename _dim_class2, typename _res_dim_class = dim_class<div_dim<dim, _dim_class2::dim>::value,
-            div_unit_instance<stored_unit_inst_t, typename _dim_class2::stored_unit_inst_t>>>
+            div_unit_instance<unit_inst_t, typename _dim_class2::unit_inst_t>>>
     constexpr _res_dim_class operator/(const _dim_class2& other) const {
         return _res_dim_class(this->value / other.value, nullptr);
     }
@@ -387,8 +389,14 @@ public:
         return dim_class(abs(inst.value));
     }
 
-    bool isZero(dim_class eps = dim_class(COMMON_EQ_ABS_EPS)) const {
-        return bcr::isZero(this->value, eps.value);
+    template <typename unit_inst2, bool explicit_unit2, typename unit_inst_eps = unit_instance<_dim, Unit::one>, bool explicit_unit_eps = false>
+    bool eq(const dim_class<dim, unit_inst2, explicit_unit2>& other, dim_class<dim, unit_inst_eps, explicit_unit_eps> eps = dim_class(COMMON_EQ_ABS_EPS, nullptr)) const {
+        return bcr::eq(this->value, rescale_unit<unit_inst2, unit_inst_t>(other.value), rescale_unit<unit_inst_eps, unit_inst_t>(eps.value));
+    }
+
+    template <typename unit_inst_eps = unit_instance<_dim, Unit::one>, bool explicit_unit_eps = false>
+    bool isZero(dim_class<dim, unit_inst_eps, explicit_unit_eps> eps = dim_class(COMMON_EQ_ABS_EPS, nullptr)) const {
+        return this->eq(ZERO(), eps);
     }
 };
 } // namespace detail
@@ -425,12 +433,12 @@ create_unit_instance2(dim, nano, unit);     \
 typedef detail::dim_class<Dimension::dim> dim ## _t;
 
 #define create_mul_unit_instance(unit1, unit2, unit) \
-typedef detail::dim_class<detail::mul_unit_instance<unit1 ## _t::stored_unit_inst_t, unit2 ## _t::stored_unit_inst_t>::dim,   \
-        detail::mul_unit_instance<unit1 ## _t::stored_unit_inst_t, unit2 ## _t::stored_unit_inst_t>, true> unit ## _t
+typedef detail::dim_class<detail::mul_unit_instance<unit1 ## _t::unit_inst_t, unit2 ## _t::unit_inst_t>::dim,   \
+        detail::mul_unit_instance<unit1 ## _t::unit_inst_t, unit2 ## _t::unit_inst_t>, true> unit ## _t
 
 #define create_div_unit_instance(unit1, unit2, unit) \
-typedef detail::dim_class<detail::div_unit_instance<unit1 ## _t::stored_unit_inst_t, unit2 ## _t::stored_unit_inst_t>::dim,   \
-        detail::div_unit_instance<unit1 ## _t::stored_unit_inst_t, unit2 ## _t::stored_unit_inst_t>, true> unit ## _t
+typedef detail::dim_class<detail::div_unit_instance<unit1 ## _t::unit_inst_t, unit2 ## _t::unit_inst_t>::dim,   \
+        detail::div_unit_instance<unit1 ## _t::unit_inst_t, unit2 ## _t::unit_inst_t>, true> unit ## _t
 
 create_unit_instances(time, second);
 create_unit_instance3(time, _3600, hour);
@@ -451,9 +459,11 @@ create_unit_instances(magnetic_flux, maxwell);
 typedef detail::dim_class<Dimension::speed> speed_t;
 create_div_unit_instance(kilometer, hour, km_per_hour);
 create_div_unit_instance(meter, second, m_per_sec);
+create_div_unit_instance(centimeter, second, cm_per_sec);
 create_div_unit_instance(millimeter, second, mm_per_sec);
 
 create_div_unit_instance(m_per_sec, second, m_per_sec2);
+create_div_unit_instance(cm_per_sec, second, cm_per_sec2);
 create_div_unit_instance(mm_per_sec, second, mm_per_sec2);
 
 create_div_unit_instance(radian, second, rad_per_sec2);

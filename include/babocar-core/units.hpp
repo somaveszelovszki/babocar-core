@@ -20,7 +20,7 @@ enum class Dimension : uint8_t {
     dimension_name(speed),                  // [km/h, m/sec, mm/sec]
     dimension_name(acceleration),           // [m/sec^2, mm/sec^2]
     dimension_name(angular_velocity),       // [rad/sec]
-    dimension_name(temperature),            // [°C]square_dimension_connections(Dimension::time, Dimension::time2);                // Square dimension connections for time.
+    dimension_name(temperature),            // [°C]
 
     dimension_name(magnetic_flux),          // [Maxwell]
     dimension_name(magnetic_flux_density)   // [Gauss]
@@ -70,36 +70,40 @@ template <Dimension _num_dim, Dimension _den_dim> struct div_dim;
  * @param dim3 The third dimension.
  **/
 #define dimension_connections(dim1, dim2, dim3)                                         \
-template <> struct detail::mul_dim<dim1, dim2>  { static constexpr Dimension value = dim3;  };  \
-template <> struct detail::mul_dim<dim2, dim1>  { static constexpr Dimension value = dim3;  };  \
-template <> struct detail::div_dim<dim3, dim1>  { static constexpr Dimension value = dim2;  };  \
-template <> struct detail::div_dim<dim3, dim2>  { static constexpr Dimension value = dim1;  }
+namespace detail {                                                                      \
+template <> struct mul_dim<dim1, dim2>  { static constexpr Dimension value = dim3;  };  \
+template <> struct mul_dim<dim2, dim1>  { static constexpr Dimension value = dim3;  };  \
+template <> struct div_dim<dim3, dim1>  { static constexpr Dimension value = dim2;  };  \
+template <> struct div_dim<dim3, dim2>  { static constexpr Dimension value = dim1;  };  \
+} // namespace detail
 
-#define square_dimension_connections(dim, sq_dim)                                                   \
-template <> struct detail::mul_dim<dim, dim>    { static constexpr Dimension value = sq_dim;    };  \
-template <> struct detail::div_dim<sq_dim, dim> { static constexpr Dimension value = dim;       }
+#define square_dimension_connections(dim, sq_dim)                                           \
+namespace detail {                                                                          \
+template <> struct mul_dim<dim, dim>    { static constexpr Dimension value = sq_dim;    };  \
+template <> struct div_dim<sq_dim, dim> { static constexpr Dimension value = dim;       };  \
+} // namespace detail
 
 /* @brief Unit multipliers.
  * @tparam unit The unit.
  **/
 template <Unit unit> struct unit_multiplier;
 
-template <> struct unit_multiplier<Unit::giga>         { static constexpr float32_t value = 1000000000.0f;            };  // Unit multiplier for giga.
-template <> struct unit_multiplier<Unit::mega>         { static constexpr float32_t value = 1000000.0f;               };  // Unit multiplier for mega.
-template <> struct unit_multiplier<Unit::kilo>         { static constexpr float32_t value = 1000.0f;                  };  // Unit multiplier for kilo.
-template <> struct unit_multiplier<Unit::hecto>        { static constexpr float32_t value = 100.0f;                   };  // Unit multiplier for hecto.
-template <> struct unit_multiplier<Unit::deca>         { static constexpr float32_t value = 10.0f;                    };  // Unit multiplier for deca.
-template <> struct unit_multiplier<Unit::one>          { static constexpr float32_t value = 1.0f;                  };  // Unit multiplier for one.
-template <> struct unit_multiplier<Unit::deci>         { static constexpr float32_t value = 1 / 10.0f;                 };  // Unit multiplier for deci.
-template <> struct unit_multiplier<Unit::centi>        { static constexpr float32_t value = 1 / 100.0f;                };  // Unit multiplier for centi.
-template <> struct unit_multiplier<Unit::milli>        { static constexpr float32_t value = 1 / 1000.0f;               };  // Unit multiplier for milli.
-template <> struct unit_multiplier<Unit::micro>        { static constexpr float32_t value = 1 / 1000000.0f;            };  // Unit multiplier for micro.
-template <> struct unit_multiplier<Unit::nano>         { static constexpr float32_t value = 1 / 1000000000.0f;         };  // Unit multiplier for nano.
+template <> struct unit_multiplier<Unit::giga>         { static constexpr float32_t value = 1000000000.0f;          };  // Unit multiplier for giga.
+template <> struct unit_multiplier<Unit::mega>         { static constexpr float32_t value = 1000000.0f;             };  // Unit multiplier for mega.
+template <> struct unit_multiplier<Unit::kilo>         { static constexpr float32_t value = 1000.0f;                };  // Unit multiplier for kilo.
+template <> struct unit_multiplier<Unit::hecto>        { static constexpr float32_t value = 100.0f;                 };  // Unit multiplier for hecto.
+template <> struct unit_multiplier<Unit::deca>         { static constexpr float32_t value = 10.0f;                  };  // Unit multiplier for deca.
+template <> struct unit_multiplier<Unit::one>          { static constexpr float32_t value = 1.0f;                   };  // Unit multiplier for one.
+template <> struct unit_multiplier<Unit::deci>         { static constexpr float32_t value = 1 / 10.0f;              };  // Unit multiplier for deci.
+template <> struct unit_multiplier<Unit::centi>        { static constexpr float32_t value = 1 / 100.0f;             };  // Unit multiplier for centi.
+template <> struct unit_multiplier<Unit::milli>        { static constexpr float32_t value = 1 / 1000.0f;            };  // Unit multiplier for milli.
+template <> struct unit_multiplier<Unit::micro>        { static constexpr float32_t value = 1 / 1000000.0f;         };  // Unit multiplier for micro.
+template <> struct unit_multiplier<Unit::nano>         { static constexpr float32_t value = 1 / 1000000000.0f;      };  // Unit multiplier for nano.
 
 // custom unit multipliers
-template <> struct unit_multiplier<Unit::_60>          { static constexpr float32_t value = 60.0f;                    };  // Unit multiplier for _60.
-template <> struct unit_multiplier<Unit::_3600>        { static constexpr float32_t value = 3600.0f;                  };  // Unit multiplier for _3600.
-template <> struct unit_multiplier<Unit::deg_to_rad>   { static constexpr float32_t value = DEG_TO_RAD;              };  // Unit multiplier for rad_to_deg.
+template <> struct unit_multiplier<Unit::_60>          { static constexpr float32_t value = 60.0f;                  };  // Unit multiplier for _60.
+template <> struct unit_multiplier<Unit::_3600>        { static constexpr float32_t value = 3600.0f;                };  // Unit multiplier for _3600.
+template <> struct unit_multiplier<Unit::deg_to_rad>   { static constexpr float32_t value = DEG_TO_RAD;             };  // Unit multiplier for rad_to_deg.
 
 template <Dimension _dim>
 struct base_unit_instance {
@@ -401,35 +405,35 @@ public:
 };
 } // namespace detail
 
-dimension_connections(Dimension::speed, Dimension::time, Dimension::distance);          // Dimension connections for speed, time and distance (speed * time = distance).
-dimension_connections(Dimension::acceleration, Dimension::time, Dimension::speed);      // Dimension connections for acceleration, time and speed (acceleration * time = speed).
-dimension_connections(Dimension::angular_velocity, Dimension::time, Dimension::angle);  // Dimension connections for angular velocity, time and angle (angular velocity * time = angle).
+dimension_connections(Dimension::speed, Dimension::time, Dimension::distance)           // Dimension connections for speed, time and distance (speed * time = distance).
+dimension_connections(Dimension::acceleration, Dimension::time, Dimension::speed)       // Dimension connections for acceleration, time and speed (acceleration * time = speed).
+dimension_connections(Dimension::angular_velocity, Dimension::time, Dimension::angle)   // Dimension connections for angular velocity, time and angle (angular velocity * time = angle).
 
 template <Dimension dim> struct detail::mul_dim<Dimension::angle, dim>  { static constexpr Dimension value = dim; };
 template <Dimension dim> struct detail::mul_dim<dim, Dimension::angle>  { static constexpr Dimension value = dim; };
 template <Dimension dim> struct detail::div_dim<dim, Dimension::angle>  { static constexpr Dimension value = dim; };
 
-#define create_unit_instance2(dim, mul, unit) \
-typedef detail::dim_class<Dimension::dim, detail::unit_instance<Dimension::dim, Unit::mul>, true> mul ## unit ## _t;  \
+#define create_unit_instance_with_unit_prefix(dim, mul, unit)                                                           \
+typedef detail::dim_class<Dimension::dim, detail::unit_instance<Dimension::dim, Unit::mul>, true> mul ## unit ## _t;    \
 typedef detail::dim_class<Dimension::dim, detail::square_unit_instance<detail::unit_instance<Dimension::dim, Unit::mul>>, true> mul ## unit ## 2_t;
 
-#define create_unit_instance3(dim, mul, unit) \
-typedef detail::dim_class<Dimension::dim, detail::unit_instance<Dimension::dim, Unit::mul>, true> unit ## _t;  \
+#define create_unit_instance_without_unit_prefix(dim, mul, unit)                                                \
+typedef detail::dim_class<Dimension::dim, detail::unit_instance<Dimension::dim, Unit::mul>, true> unit ## _t;   \
 typedef detail::dim_class<Dimension::dim, detail::square_unit_instance<detail::unit_instance<Dimension::dim, Unit::mul>>, true> unit ## 2_t;
 
-#define create_unit_instances(dim, unit)    \
-square_dimension_connections(Dimension::dim, Dimension::dim ## 2);\
-create_unit_instance2(dim, giga, unit);     \
-create_unit_instance2(dim, mega, unit);     \
-create_unit_instance2(dim, kilo, unit);     \
-create_unit_instance2(dim, hecto, unit);    \
-create_unit_instance2(dim, deca, unit);     \
-create_unit_instance3(dim, one, unit);      \
-create_unit_instance2(dim, deci, unit);     \
-create_unit_instance2(dim, centi, unit);    \
-create_unit_instance2(dim, milli, unit);    \
-create_unit_instance2(dim, micro, unit);    \
-create_unit_instance2(dim, nano, unit);     \
+#define create_unit_instances(dim, unit)                            \
+square_dimension_connections(Dimension::dim, Dimension::dim ## 2)   \
+create_unit_instance_with_unit_prefix(dim, giga, unit);             \
+create_unit_instance_with_unit_prefix(dim, mega, unit);             \
+create_unit_instance_with_unit_prefix(dim, kilo, unit);             \
+create_unit_instance_with_unit_prefix(dim, hecto, unit);            \
+create_unit_instance_with_unit_prefix(dim, deca, unit);             \
+create_unit_instance_without_unit_prefix(dim, one, unit);           \
+create_unit_instance_with_unit_prefix(dim, deci, unit);             \
+create_unit_instance_with_unit_prefix(dim, centi, unit);            \
+create_unit_instance_with_unit_prefix(dim, milli, unit);            \
+create_unit_instance_with_unit_prefix(dim, micro, unit);            \
+create_unit_instance_with_unit_prefix(dim, nano, unit);             \
 typedef detail::dim_class<Dimension::dim> dim ## _t;
 
 #define create_mul_unit_instance(unit1, unit2, unit) \
@@ -441,8 +445,8 @@ typedef detail::dim_class<detail::div_unit_instance<unit1 ## _t::unit_inst_t, un
         detail::div_unit_instance<unit1 ## _t::unit_inst_t, unit2 ## _t::unit_inst_t>, true> unit ## _t
 
 create_unit_instances(time, second);
-create_unit_instance3(time, _3600, hour);
-create_unit_instance3(time, _60, minute);
+create_unit_instance_without_unit_prefix(time, _3600, hour);
+create_unit_instance_without_unit_prefix(time, _60, minute);
 
 create_unit_instances(distance, meter);
 create_unit_instances(weight, gram);
@@ -451,7 +455,7 @@ create_unit_instances(current, ampere);
 create_unit_instances(resistance, ohm);
 
 create_unit_instances(angle, radian);
-create_unit_instance3(angle, deg_to_rad, degree);
+create_unit_instance_without_unit_prefix(angle, deg_to_rad, degree);
 
 create_unit_instances(temperature, celsius);
 create_unit_instances(magnetic_flux, maxwell);

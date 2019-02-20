@@ -20,6 +20,17 @@ inline T min(const T& a, const T& b) {
 }
 
 /**
+ * @brief Gets absolute of the value.
+ * @param value The value.
+ * @returns The absolute of the value.
+ */
+template <typename T>
+inline T abs(const T& value) {
+    const T result = value >= T(0) ? value : -value;
+    return result;
+}
+
+/**
  * @brief Gets maximum of the two values.
  * @param a The first value.
  * @param b The second value.
@@ -54,7 +65,7 @@ inline Sign sgn(const T& value) {
 
 inline int32_t round(const float32_t value) {
     const int32_t val1 = static_cast<int32_t>(value), val2 = static_cast<int32_t>(value + 1);
-    return abs(val1 - value) < abs(val2 - value) ? val1 : val2;
+    return bcr::abs(val1 - value) < bcr::abs(val2 - value) ? val1 : val2;
 }
 
 /**

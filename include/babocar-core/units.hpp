@@ -409,9 +409,11 @@ dimension_connections(Dimension::speed, Dimension::time, Dimension::distance)   
 dimension_connections(Dimension::acceleration, Dimension::time, Dimension::speed)       // Dimension connections for acceleration, time and speed (acceleration * time = speed).
 dimension_connections(Dimension::angular_velocity, Dimension::time, Dimension::angle)   // Dimension connections for angular velocity, time and angle (angular velocity * time = angle).
 
-template <Dimension dim> struct detail::mul_dim<Dimension::angle, dim>  { static constexpr Dimension value = dim; };
-template <Dimension dim> struct detail::mul_dim<dim, Dimension::angle>  { static constexpr Dimension value = dim; };
-template <Dimension dim> struct detail::div_dim<dim, Dimension::angle>  { static constexpr Dimension value = dim; };
+namespace detail {
+template <Dimension dim> struct mul_dim<Dimension::angle, dim>  { static constexpr Dimension value = dim; };
+template <Dimension dim> struct mul_dim<dim, Dimension::angle>  { static constexpr Dimension value = dim; };
+template <Dimension dim> struct div_dim<dim, Dimension::angle>  { static constexpr Dimension value = dim; };
+} // namespace detail
 
 #define create_unit_instance_with_unit_prefix(dim, mul, unit)                                                           \
 typedef detail::dim_class<Dimension::dim, detail::unit_instance<Dimension::dim, Unit::mul>, true> mul ## unit ## _t;    \

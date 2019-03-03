@@ -192,6 +192,7 @@ catkin_add_gtest(${PROJECT_NAME}-test
   test/run_tests.cpp
   test/units.cpp
   test/vec.cpp
+  test/ring_buffer.cpp
 )
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})

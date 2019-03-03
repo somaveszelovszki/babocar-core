@@ -1,4 +1,4 @@
-#include <babocar-core/vec.hpp>
+#include <babocar-core/container/vec.hpp>
 
 #include <gtest/gtest.h>
 #include <iostream>

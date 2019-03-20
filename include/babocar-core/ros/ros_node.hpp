@@ -8,9 +8,9 @@ namespace bcr {
 
 class RosNode : public ros::NodeHandle {
 public:
-    RosNode(const std::string& name, millisecond_t period)
+    RosNode(const std::string& name, millisecond_t period = millisecond_t(0))
         : name(name)
-        , rate(second_t(1) / period) {}
+        , rate(period == millisecond_t::ZERO() ? std::numeric_limits<float64_t>::max() : second_t(1) / period) {}
 
     template <typename T>
     T getParameter(const std::string& key) const;

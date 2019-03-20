@@ -64,8 +64,7 @@ inline Sign sgn(const T& value) {
 }
 
 inline int32_t round(const float32_t value) {
-    const int32_t val1 = static_cast<int32_t>(value), val2 = static_cast<int32_t>(value + 1);
-    return bcr::abs(val1 - value) < bcr::abs(val2 - value) ? val1 : val2;
+    return static_cast<int32_t>(value + 0.5f);
 }
 
 /**
@@ -160,6 +159,19 @@ inline bool isZero(const T& value, T eps = static_cast<T>(COMMON_EQ_ABS_EPS)) {
 }
 
 /**
+ * @brief Calculates square of the vector length using the Pythagorean theory.
+ * @restrict Type must be arithmetic.
+ * @tparam T The type of the values.
+ * @param a The length of the first leg of the triangle.
+ * @param b The length of the other leg of the triangle.
+ * @returns The length of the hypotenuse of the triangle.
+ */
+template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
+inline T pythag_square(const T& a, const T& b) {
+    return a * a + b * b;
+}
+
+/**
  * @brief Calculates the hypotenuse of a triangle using the Pythagorean theory.
  * @restrict Type must be arithmetic.
  * @tparam T The type of the values.
@@ -169,8 +181,21 @@ inline bool isZero(const T& value, T eps = static_cast<T>(COMMON_EQ_ABS_EPS)) {
  */
 template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 inline T pythag(const T& a, const T& b) {
-    const float32_t _a = static_cast<float32_t>(a), _b = static_cast<float32_t>(b);
-    return static_cast<T>(sqrtf(_a * _a + _b * _b));
+    return static_cast<T>(sqrt(a * a + b * b));
+}
+
+/**
+ * @brief Calculates square of the vector length using the Pythagorean theory.
+ * @restrict Type must be arithmetic.
+ * @tparam T The type of the values.
+ * @param a The length of the first coordinate.
+ * @param b The length of the second coordinate.
+ * @param c The length of the third coordinate.
+ * @returns The length of the vector.
+ */
+template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
+inline T pythag_square(const T& a, const T& b, const T& c) {
+    return a * a + b * b + c * c;
 }
 
 /**
@@ -184,7 +209,7 @@ inline T pythag(const T& a, const T& b) {
  */
 template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 inline T pythag(const T& a, const T& b, const T& c) {
-    return static_cast<T>(sqrtf(static_cast<float32_t>(a * a + b * b + c * c)));
+    return static_cast<T>(sqrt(a * a + b * b + c * c));
 }
 
 /**
@@ -201,5 +226,29 @@ inline T powerOf(const T& value, uint32_t pow) {
     }
     return result;
 }
+
+inline uint32_t add_overflow(uint32_t value, uint32_t incr, uint32_t exclusive_max) {
+    value += incr;
+    while(value >= exclusive_max) {
+        value -= exclusive_max;
+    }
+    return value;
+}
+
+inline uint32_t sub_underflow(uint32_t value, uint32_t sub, uint32_t exclusive_max) {
+    while(value < sub) {
+        sub -= exclusive_max;
+    }
+    return value - sub;
+}
+
+inline uint32_t incr_overflow(uint32_t value, uint32_t exclusive_max) {
+    return ++value == exclusive_max ? 0 : value;
+}
+
+inline uint32_t decr_underflow(uint32_t value, uint32_t exclusive_max) {
+    return value-- == 0 ? exclusive_max - 1 : value;
+}
+
 } // namespace bcr
 

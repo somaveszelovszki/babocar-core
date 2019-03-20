@@ -124,7 +124,7 @@ template <typename T> struct Point2 {
      **/
     template <typename T2>
     operator Point2<T2>() const {
-        return Point2<T2>(static_cast<T>(this->X), static_cast<T>(this->Y));
+        return Point2<T2>(T2(this->X), T2(this->Y));
     }
 
     /* @brief Checks if two points are equal
@@ -150,6 +150,14 @@ template <typename T> struct Point2 {
         return bcr::pythag(this->X, this->Y);
     }
 
+    /* @brief Calculates square of the distance between the two points.
+     * @param other The other point.
+     * @returns The distance between the two points.
+     **/
+    T distance_square(Point2<T> other) const {
+        return bcr::pythag_square(this->X - other.X, this->Y - other.Y);
+    }
+    
     /* @brief Calculates distance between the two points.
      * @param other The other point.
      * @returns The distance between the two points.
@@ -209,7 +217,7 @@ angle_t Point2<T>::getAngle(const Vec2<T>& other, bcr::RotationDir dir) const {
         angle = -1 * getAngle(Point2<T>(2 * this->X - other.X, other.Y), bcr::RotationDir::LEFT);
         break;
     case RotationDir::CENTER:
-        angle = angle_t::from<radians>(0.0f);
+        angle = angle_t::ZERO();
         break;
     }
 
@@ -265,7 +273,12 @@ bool Point2<T>::isInside(const Point2<T>& a, const Point2<T>& b, const Point2<T>
     return abs(static_cast<int8_t>(sA) + static_cast<int8_t>(sB) + static_cast<int8_t>(sC)) == 3;
 }
 
+typedef Point2<int32_t>     Point2i, Vec2i;         // 32-bit integer types.
 typedef Point2<float32_t>   Point2f, Vec2f;         // 32-bit floating point types.
+
+typedef Point2<meter_t>   Point2m, Vec2m;           // meter types.
+typedef Point2<centimeter_t>   Point2cm, Vec2cm;    // centimeter types.
+typedef Point2<m_per_sec_t>   Point2mps, Vec2mps;   // meter/sec types.
 
 } // namespace bcr
 

@@ -121,6 +121,7 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/types.cpp
+  src/ros_convert.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -193,6 +194,7 @@ catkin_add_gtest(${PROJECT_NAME}-test
   test/units.cpp
   test/vec.cpp
   test/ring_buffer.cpp
+  test/linalg.cpp
 )
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})

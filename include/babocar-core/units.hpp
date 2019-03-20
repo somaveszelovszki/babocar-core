@@ -402,6 +402,10 @@ public:
     bool isZero(dim_class<dim, unit_inst_eps, explicit_unit_eps> eps = dim_class(COMMON_EQ_ABS_EPS, nullptr)) const {
         return this->eq(ZERO(), eps);
     }
+
+    bool isInfinity() const {
+        return std::isinf(this->value);
+    }
 };
 } // namespace detail
 
@@ -472,8 +476,9 @@ create_div_unit_instance(m_per_sec, second, m_per_sec2);
 create_div_unit_instance(cm_per_sec, second, cm_per_sec2);
 create_div_unit_instance(mm_per_sec, second, mm_per_sec2);
 
-create_div_unit_instance(radian, second, rad_per_sec2);
-create_div_unit_instance(degree, second, deg_per_sec2);
+typedef detail::dim_class<Dimension::angular_velocity> angular_velocity_t;
+create_div_unit_instance(radian, second, rad_per_sec);
+create_div_unit_instance(degree, second, deg_per_sec);
 
 } // namespace bcr
 

@@ -181,6 +181,15 @@ inline bool isMultipleOf90(angle_t value, angle_t eps) {
         || eqWithOverflow360(value, 3 * PI_2, eps);
 }
 
+/* @brief Calculates square of the vector length using the Pythagorean theory.
+ * @param a The length of the first leg of the triangle.
+ * @param b The length of the other leg of the triangle.
+ * @returns The length of the hypotenuse of the triangle.
+ **/
+inline distance_t pythag_square(distance_t a, distance_t b) {
+    return centimeter_t(pythag_square(centimeter_t(a).get(), centimeter_t(b).get()));
+}
+
 /* @brief Calculates vector length using the Pythagorean theory.
  * @param a The length of the first leg of the triangle.
  * @param b The length of the other leg of the triangle.
@@ -188,6 +197,16 @@ inline bool isMultipleOf90(angle_t value, angle_t eps) {
  **/
 inline distance_t pythag(distance_t a, distance_t b) {
     return centimeter_t(pythag(centimeter_t(a).get(), centimeter_t(b).get()));
+}
+
+/* @brief Calculates square of the vector length using the Pythagorean theory.
+ * @param a The length of the first coordinate.
+ * @param b The length of the second coordinate.
+ * @param c The length of the third coordinate.
+ * @returns The length of the vector.
+ **/
+inline distance_t pythag_square(distance_t a, distance_t b, distance_t c) {
+    return centimeter_t(pythag_square(centimeter_t(a).get(), centimeter_t(b).get(), centimeter_t(c).get()));
 }
 
 /* @brief Calculates vector length using the Pythagorean theory.

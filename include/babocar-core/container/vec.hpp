@@ -7,17 +7,17 @@
 
 namespace bcr {
 
-template <typename T, size_t capacity_>
+template <typename T, uint32_t capacity_>
 class vec {
 public:
     typedef T* iterator;
     typedef const T* const_iterator;
 
-    T& operator[](size_t pos) {
+    T& operator[](uint32_t pos) {
         return *reinterpret_cast<T*>(&this->data_[pos]);
     }
 
-    const T& operator[](size_t pos) const {
+    const T& operator[](uint32_t pos) const {
         return *reinterpret_cast<const T*>(&this->data_[pos]);
     }
 
@@ -56,8 +56,8 @@ public:
      * @param _size Number of elements to append.
      * @returns Number of appended elements. Less than _size if vector capacity_ is reached.
      **/
-    size_t append(const T *_data, size_t _size) {
-        size_t num = bcr::min(_size, capacity_ - this->size_);
+    uint32_t append(const T *_data, uint32_t _size) {
+        uint32_t num = bcr::min(_size, capacity_ - this->size_);
         bcr::copy(_data, this->end(), num);
         this->size_ += num;
         return num;
@@ -67,8 +67,8 @@ public:
      * @param vec The elements to append.
      * @returns Number of appended elements. Less than vec.size if vector capacity_ is reached.
      **/
-    template <size_t capacity2>
-    size_t append(const vec<T, capacity2>& vec) {
+    template <uint32_t capacity2>
+    uint32_t append(const vec<T, capacity2>& vec) {
         return this->append(vec.data_, vec.size_);
     }
 
@@ -76,12 +76,12 @@ public:
      * @param item The element to append.
      * @returns Number of appended elements. 1 if element has been appended successfully, 0 otherwise.
      **/
-    size_t append(const T& item) {
+    uint32_t append(const T& item) {
         return this->append(&item, 1);
     }
 
-    size_t insert(iterator pos, const T& item) {
-        size_t num = this->size_ < capacity_ && pos - this->begin() <= size_ ? 1 : 0;
+    uint32_t insert(iterator pos, const T& item) {
+        uint32_t num = this->size_ < capacity_ && pos - this->begin() <= size_ ? 1 : 0;
         if (num) {
             for (iterator it = this->end(); it != pos; --it) {
                 std::swap(*it, *(it - 1));
@@ -105,7 +105,7 @@ public:
 
     bool remove(const T& item) {
         bool found = false;
-        for(size_t i = 0; i < this->size_; ++i) {
+        for(uint32_t i = 0; i < this->size_; ++i) {
             if (*reinterpret_cast<T*>(&this->data_[i]) == item) {
                 found = true;
             }
@@ -164,9 +164,9 @@ public:
         return reinterpret_cast<T*>(&this->data_[this->size_]);
     }
 
-    size_t size() const { return this->size_; }
+    uint32_t size() const { return this->size_; }
 
-    size_t capacity() const { return capacity_; }
+    uint32_t capacity() const { return capacity_; }
 
     T* data() { return reinterpret_cast<T*>(&this->data_); }
 
@@ -174,7 +174,7 @@ public:
 
 private:
     typename std::aligned_storage<sizeof(T), alignof(T)>::type data_[capacity_];
-    size_t size_;
+    uint32_t size_;
 };
 } // namespace bcr
 

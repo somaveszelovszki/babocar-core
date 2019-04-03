@@ -66,7 +66,6 @@ enum class BitOrder : uint8_t {
  */
 enum class Sign : int32_t {
     POSITIVE = 1,
-    NEUTRAL = 0,
     NEGATIVE = -1
 };
 } // namespace bcr

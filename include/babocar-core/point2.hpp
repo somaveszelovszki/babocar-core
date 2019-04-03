@@ -166,11 +166,12 @@ template <typename T> struct Point2 {
         return bcr::pythag(this->X - other.X, this->Y - other.Y);
     }
 
-    /* @brief Calculates steering angle of given vector using this point as the origo.
+    /* @brief Calculates angle of given vector using this point as the origo.
      * @param other The vector.
-     * @param dir Indicates which is the positive steering direction.
      **/
-    angle_t getAngle(const Vec2<T>& other, bcr::RotationDir dir) const;
+    angle_t getAngle(const Vec2<T>& other) const {
+        return bcr::atan2(other.Y - this->Y, other.X - this->X);
+    }
 
     /* @brief Calculates weighted average of the two points.
      * @param other The other point.
@@ -198,31 +199,6 @@ template <typename T> struct Point2 {
 template <typename T> struct bbox2 {
     Point2<T> bl, tr;   // Bottom left and top right points.
 };
-
-template <typename T>
-angle_t Point2<T>::getAngle(const Vec2<T>& other, bcr::RotationDir dir) const {
-    angle_t angle;
-
-    switch(dir) {
-    case RotationDir::LEFT:
-        if(bcr::eq(this->X, other.X))
-            angle = other.Y > this->Y ? PI_2 : 3 * PI_2;
-        else if(other.X > this->X)
-            angle = other.Y >= this->Y ? bcr::atan((other.Y - this->Y) / (other.X - this->X)) : 2 * PI + bcr::atan((other.Y - this->Y) / (other.X - this->X));
-        else
-            angle = PI + bcr::atan((other.Y - this->Y) /(other.X - this->X));
-        break;
-
-    case RotationDir::RIGHT:
-        angle = -1 * getAngle(Point2<T>(2 * this->X - other.X, other.Y), bcr::RotationDir::LEFT);
-        break;
-    case RotationDir::CENTER:
-        angle = angle_t::ZERO();
-        break;
-    }
-
-    return angle;
-}
 
 template<typename T>
 void Point2<T>::bbox(const Point2<T> points[], uint32_t numPoints, bbox2<T> *pResult) {

@@ -5,8 +5,11 @@
 #include <cmath>
 
 namespace bcr {
-
+namespace detail {
 static constexpr float32_t COMMON_EQ_ABS_EPS = 0.00001f;    // Default absolute epsilon for equality check.
+}
+
+// ---------------------------------------- Type-independent functions (same implementation for unit classes) ----------------------------------------
 
 /**
  * @brief Gets minimum of the two values.
@@ -17,17 +20,6 @@ static constexpr float32_t COMMON_EQ_ABS_EPS = 0.00001f;    // Default absolute 
 template <typename T>
 inline T min(const T& a, const T& b) {
     return a < b ? a : b;
-}
-
-/**
- * @brief Gets absolute of the value.
- * @param value The value.
- * @returns The absolute of the value.
- */
-template <typename T>
-inline T abs(const T& value) {
-    const T result = value >= T(0) ? value : -value;
-    return result;
 }
 
 /**
@@ -47,24 +39,9 @@ inline T max(const T& a, const T& b) {
  * @param b The second value.
  * @returns The average of the two values.
  */
-template <typename T>
-inline T avg(const T& a, const T& b) {
-    return T((a + b) / 2.0f);
-}
-
-/**
- * @brief Gets sign of the value.
- * @restrict Type must be arithmetic.
- * @param value The value.
- * @returns The sign of the value.
- */
-template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-inline Sign sgn(const T& value) {
-    return value >= T(0) ? Sign::POSITIVE : Sign::NEGATIVE;
-}
-
-inline int32_t round(const float32_t value) {
-    return static_cast<int32_t>(value + 0.5f);
+template <typename T1, typename T2>
+inline auto avg(const T1& a, const T2& b) -> decltype((a + b) / 2.0f) {
+    return (a + b) / 2.0f;
 }
 
 /**
@@ -75,8 +52,8 @@ inline int32_t round(const float32_t value) {
  * @param b2 The second boundary.
  * @returns Boolean value indicating if the value is between the boundaries.
  */
-template <typename T>
-inline bool isBtw(const T& value, const T& b1, const T& b2) {
+template <typename T1, typename T2, typename T3>
+inline bool isBtw(const T1& value, const T2& b1, const T3& b2) {
     return b2 >= b1 ? value >= b1 && value <= b2 : value >= b2 && value <= b1;
 }
 
@@ -90,7 +67,7 @@ inline bool isBtw(const T& value, const T& b1, const T& b2) {
  */
 template <typename T>
 inline T clamp(const T& value, const T& b1, const T& b2) {
-    return b2 > b1 ? min(max(value, b1), b2) : min(max(value, b2), b1);
+    return b2 > b1 ? bcr::min(bcr::max(value, b1), b2) : bcr::min(bcr::max(value, b2), b1);
 }
 
 /**
@@ -100,9 +77,9 @@ inline T clamp(const T& value, const T& b1, const T& b2) {
  * @param ref The reference value.
  * @param relErr The permitted relative error.
  */
-template <typename T>
-inline bool isInRange(const T& value, const T& ref, float32_t relErr) {
-    return isBtw(value, static_cast<T>(ref * (1.0f - relErr)), static_cast<T>(ref * (1.0f + relErr)));
+template <typename T1, typename T2>
+inline bool isInRange(const T1& value, const T2& ref, float32_t relErr) {
+    return isBtw(value, ref * (1.0f - relErr), ref * (1.0f + relErr));
 }
 
 /**
@@ -118,20 +95,7 @@ inline bool isInRange(const T& value, const T& ref, float32_t relErr) {
  */
 template <typename S, typename R>
 inline R map(const S& value, const S& fromLow, const S& fromHigh, const R& toLow, const R& toHigh) {
-    return toLow + static_cast<R>((clamp(value, fromLow, fromHigh) - fromLow) * (toHigh - toLow) / (fromHigh - fromLow));
-}
-
-/**
- * @brief Checks if given value equals the reference with the default epsilon tolerance.
- * @restrict Type must be arithmetic.
- * @tparam T Numeric type of the value, the reference and the epsilon tolerance.
- * @param value The value to compare to the reference.
- * @param ref The reference.
- */
-template <typename T>
-inline typename std::enable_if<std::is_arithmetic<T>::value, bool>::type eq(const T& value, const T& ref) {
-    static constexpr T eps(COMMON_EQ_ABS_EPS);
-    return (value >= ref - eps) && (value <= ref + eps);
+    return toLow + R((clamp(value, fromLow, fromHigh) - fromLow) * (toHigh - toLow) / (fromHigh - fromLow));
 }
 
 /**
@@ -141,9 +105,69 @@ inline typename std::enable_if<std::is_arithmetic<T>::value, bool>::type eq(cons
  * @param ref The reference.
  * @param eps The epsilon tolerance.
  */
-template <typename T>
-inline bool eq(const T& value, const T& ref, const T& eps) {
+template <typename T1, typename T2, typename T3>
+inline bool eq(const T1& value, const T2& ref, const T3& eps) {
     return (value >= ref - eps) && (value <= ref + eps);
+}
+
+/**
+ * @brief Calculates square of the vector length using the Pythagorean theory.
+ * @tparam T The type of the values.
+ * @param a The length of the first leg of the triangle.
+ * @param b The length of the other leg of the triangle.
+ * @returns The length of the hypotenuse of the triangle.
+ */
+template <typename T>
+inline auto pythag_square(const T& a, const T& b) -> decltype (a * b) {
+    return a * a + b * b;
+}
+
+/**
+ * @brief Calculates square of the vector length using the Pythagorean theory.
+ * @tparam T The type of the values.
+ * @param a The length of the first coordinate.
+ * @param b The length of the second coordinate.
+ * @param c The length of the third coordinate.
+ * @returns The length of the vector.
+ */
+template <typename T>
+inline auto pythag_square(const T& a, const T& b, const T& c) -> decltype (a * b) {
+    return a * a + b * b + c * c;
+}
+
+// ---------------------------------------- Type-dependent functions (different implementations for unit classes) ----------------------------------------
+
+/**
+ * @brief Gets absolute of the value.
+ * @param value The value.
+ * @returns The absolute of the value.
+ */
+template <typename T>
+inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type abs(const T& value) {
+    return value >= T(0) ? value : -value;
+}
+
+/**
+ * @brief Gets sign of the value.
+ * @restrict Type must be arithmetic.
+ * @param value The value.
+ * @returns The sign of the value.
+ */
+template <typename T>
+inline typename std::enable_if<std::is_arithmetic<T>::value, Sign>::type sgn(const T& value) {
+    return value >= 0 ? Sign::POSITIVE : Sign::NEGATIVE;
+}
+
+/**
+ * @brief Checks if given value equals the reference with the default epsilon tolerance.
+ * @restrict Type must be arithmetic.
+ * @tparam T Numeric type of the value, the reference and the epsilon tolerance.
+ * @param value The value to compare to the reference.
+ * @param ref The reference.
+ */
+template <typename T1, typename T2>
+inline typename std::enable_if<std::is_arithmetic<T1>::value && std::is_arithmetic<T2>::value, bool>::type eq(const T1& value, const T2& ref) {
+    return bcr::eq(value, ref, detail::COMMON_EQ_ABS_EPS);
 }
 
 /**
@@ -153,22 +177,21 @@ inline bool eq(const T& value, const T& ref, const T& eps) {
  * @param value The value to compare to the reference.
  * @param eps The epsilon tolerance - 0.0001f by default.
  */
-template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-inline bool isZero(const T& value, T eps = static_cast<T>(COMMON_EQ_ABS_EPS)) {
-    return eq(value, static_cast<T>(0), eps);
+template <typename T1, typename T2>
+inline typename std::enable_if<std::is_arithmetic<T1>::value && std::is_arithmetic<T2>::value, bool>::type isZero(const T1& value, const T2& eps) {
+    return bcr::eq(value, 0, eps);
 }
 
 /**
- * @brief Calculates square of the vector length using the Pythagorean theory.
+ * @brief Checks if given value equals zero with the given epsilon tolerance.
  * @restrict Type must be arithmetic.
- * @tparam T The type of the values.
- * @param a The length of the first leg of the triangle.
- * @param b The length of the other leg of the triangle.
- * @returns The length of the hypotenuse of the triangle.
+ * @tparam T Numeric type of the value, the reference and the epsilon tolerance.
+ * @param value The value to compare to the reference.
+ * @param eps The epsilon tolerance - 0.0001f by default.
  */
-template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-inline T pythag_square(const T& a, const T& b) {
-    return a * a + b * b;
+template <typename T>
+inline typename std::enable_if<std::is_arithmetic<T>::value, bool>::type isZero(const T& value) {
+    return bcr::eq(value, T(0));
 }
 
 /**
@@ -179,23 +202,9 @@ inline T pythag_square(const T& a, const T& b) {
  * @param b The length of the other leg of the triangle.
  * @returns The length of the hypotenuse of the triangle.
  */
-template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-inline T pythag(const T& a, const T& b) {
-    return static_cast<T>(sqrt(a * a + b * b));
-}
-
-/**
- * @brief Calculates square of the vector length using the Pythagorean theory.
- * @restrict Type must be arithmetic.
- * @tparam T The type of the values.
- * @param a The length of the first coordinate.
- * @param b The length of the second coordinate.
- * @param c The length of the third coordinate.
- * @returns The length of the vector.
- */
-template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-inline T pythag_square(const T& a, const T& b, const T& c) {
-    return a * a + b * b + c * c;
+template <typename T>
+inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type pythag(const T& a, const T& b) {
+    return T(std::sqrt(a * a + b * b));
 }
 
 /**
@@ -207,9 +216,15 @@ inline T pythag_square(const T& a, const T& b, const T& c) {
  * @param c The length of the third coordinate.
  * @returns The length of the vector.
  */
-template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-inline T pythag(const T& a, const T& b, const T& c) {
+template <typename T>
+inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type pythag(const T& a, const T& b, const T& c) {
     return static_cast<T>(sqrt(a * a + b * b + c * c));
+}
+
+// ---------------------------------------- Specific type functions ----------------------------------------
+
+inline int32_t round(const float32_t value) {
+    return static_cast<int32_t>(value + 0.5f);
 }
 
 /**
@@ -236,10 +251,13 @@ inline uint32_t add_overflow(uint32_t value, uint32_t incr, uint32_t exclusive_m
 }
 
 inline uint32_t sub_underflow(uint32_t value, uint32_t sub, uint32_t exclusive_max) {
-    while(value < sub) {
+    while(value >= exclusive_max) {
+        value -= exclusive_max;
+    }
+    while(sub >= exclusive_max) {
         sub -= exclusive_max;
     }
-    return value - sub;
+    return value >= sub ? value - sub : value + exclusive_max - sub;
 }
 
 inline uint32_t incr_overflow(uint32_t value, uint32_t exclusive_max) {

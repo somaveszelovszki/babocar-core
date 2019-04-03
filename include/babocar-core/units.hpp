@@ -1,7 +1,8 @@
 #pragma once
 
-#include <math.h>
-#include <babocar-core/numeric.hpp>
+#include <babocar-core/types.hpp>
+
+#include <type_traits>
 
 namespace bcr {
 
@@ -178,13 +179,13 @@ private:
 
     float32_t value;   // The stored value.
 
+public:
     /* @brief Constructor - sets value.
      * @tparam T Numeric type of the parameter value.
      * param _value The value given in the unit instance.
      **/
     constexpr explicit dim_class(float32_t _value, void*) : value(_value) {}
 
-public:
     /* @brief Default constructor - sets value to 0.
      **/
     constexpr dim_class() : value(0.0f) {}
@@ -387,24 +388,6 @@ public:
             div_unit_instance<unit_inst_t, typename _dim_class2::unit_inst_t>>>
     constexpr _res_dim_class operator/(const _dim_class2& other) const {
         return _res_dim_class(this->value / other.value, nullptr);
-    }
-
-    friend constexpr dim_class abs(const dim_class& inst) {
-        return dim_class(abs(inst.value));
-    }
-
-    template <typename unit_inst2, bool explicit_unit2, typename unit_inst_eps = unit_instance<_dim, Unit::one>, bool explicit_unit_eps = false>
-    bool eq(const dim_class<dim, unit_inst2, explicit_unit2>& other, dim_class<dim, unit_inst_eps, explicit_unit_eps> eps = dim_class(COMMON_EQ_ABS_EPS, nullptr)) const {
-        return bcr::eq(this->value, rescale_unit<unit_inst2, unit_inst_t>(other.value), rescale_unit<unit_inst_eps, unit_inst_t>(eps.value));
-    }
-
-    template <typename unit_inst_eps = unit_instance<_dim, Unit::one>, bool explicit_unit_eps = false>
-    bool isZero(dim_class<dim, unit_inst_eps, explicit_unit_eps> eps = dim_class(COMMON_EQ_ABS_EPS, nullptr)) const {
-        return this->eq(ZERO(), eps);
-    }
-
-    bool isInfinity() const {
-        return std::isinf(this->value);
     }
 };
 } // namespace detail

@@ -23,8 +23,8 @@ geometry_msgs::Quaternion quaternion_from_yaw(radian_t angle) {
 
 geometry_msgs::Pose ros_convert(const Pose& pose) {
     geometry_msgs::Pose result;
-    result.position.x = static_cast<meter_t>(pose.X).get();
-    result.position.y = static_cast<meter_t>(pose.Y).get();
+    result.position.x = static_cast<meter_t>(pose.pos.X).get();
+    result.position.y = static_cast<meter_t>(pose.pos.Y).get();
     result.position.z = 0.0;
     result.orientation = detail::quaternion_from_yaw(pose.angle);
     return result;
@@ -32,8 +32,8 @@ geometry_msgs::Pose ros_convert(const Pose& pose) {
 
 Pose ros_convert(const geometry_msgs::Pose& pose) {
     Pose result;
-    result.Y = meter_t(pose.position.y);
-    result.X = meter_t(pose.position.x);
+    result.pos.Y = meter_t(pose.position.y);
+    result.pos.X = meter_t(pose.position.x);
     result.angle = detail::quaternion_to_yaw(pose.orientation);
     return result;
 }

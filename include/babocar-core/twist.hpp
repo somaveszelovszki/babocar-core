@@ -5,9 +5,9 @@
 
 namespace bcr {
 struct Twist {
-    speed_t X;
-    speed_t Y;
-    angular_velocity_t ang_vel;
+    m_per_sec_t X;
+    m_per_sec_t Y;
+    rad_per_sec_t ang_vel;
 };
 } // namespace bcr
 

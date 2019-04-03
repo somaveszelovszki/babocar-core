@@ -4,6 +4,7 @@
 #include <babocar-core/arrays.hpp>
 #include <type_traits>
 #include <initializer_list>
+#include <utility>
 
 namespace bcr {
 
@@ -138,6 +139,16 @@ public:
             this->begin_ = this->get_idx(1);
         } else {
             (*this)[this->size_++] = item;
+        }
+    }
+
+    template <typename... Args>
+    void emplace_back(Args... args) {
+        if (this->full()) {
+            (*this)[0] = T(std::forward<Args>(args)...);
+            this->begin_ = this->get_idx(1);
+        } else {
+            (*this)[this->size_++] = T(std::forward<Args>(args)...);
         }
     }
 

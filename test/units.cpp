@@ -27,6 +27,25 @@ TEST(units, unit_convert) {
     EXPECT_TRUE(bcr::eq(km, km, eps));
 }
 
+TEST(units, compare) {
+    constexpr millimeter_t mm(1);
+    constexpr centimeter_t cm(1);
+
+    EXPECT_TRUE(mm == mm);
+    EXPECT_FALSE(mm != mm);
+    EXPECT_FALSE(mm < mm);
+    EXPECT_TRUE(mm <= mm);
+    EXPECT_FALSE(mm > mm);
+    EXPECT_TRUE(mm >= mm);
+
+    EXPECT_FALSE(mm == cm);
+    EXPECT_TRUE(mm != cm);
+    EXPECT_TRUE(mm < cm);
+    EXPECT_TRUE(mm <= cm);
+    EXPECT_FALSE(mm > cm);
+    EXPECT_FALSE(mm >= cm);
+}
+
 TEST(units, unit_div) {
     constexpr distance_t s = centimeter_t(2.0f);
     constexpr bcr::time_t t = second_t(0.5f);
@@ -37,6 +56,10 @@ TEST(units, unit_div) {
     constexpr second_t t2(0.5f);
     constexpr m_per_sec_t v2 = s2 / t2;
     EXPECT_NEAR(0.04f, v2.get(), detail::COMMON_EQ_ABS_EPS);
+
+    constexpr meter_t m(1);
+    constexpr centimeter_t cm(1);
+    EXPECT_NEAR(100.0f, m / cm, detail::COMMON_EQ_ABS_EPS);
 }
 
 TEST(units, unit_mul) {

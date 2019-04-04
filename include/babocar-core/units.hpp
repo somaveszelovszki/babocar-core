@@ -157,7 +157,7 @@ using square_unit_instance = mul_unit_instance<_unit_inst_t, _unit_inst_t>;
  * @returns The rescaled value.
  **/
 template <typename from_unit_inst_t, typename to_unit_inst_t, typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-constexpr typename std::enable_if<from_unit_inst_t::dim == to_unit_inst_t::dim, T>::type rescale_unit(const T& value) {
+inline constexpr typename std::enable_if<from_unit_inst_t::dim == to_unit_inst_t::dim, T>::type rescale_unit(const T& value) {
     return value * from_unit_inst_t::mul / to_unit_inst_t::mul;
 }
 
@@ -199,17 +199,6 @@ public:
 
     static constexpr dim_class ZERO() { return dim_class(0.0f, nullptr); }
 
-    /* @brief Gets value in given unit.
-     * @restrict Type must be unit instance type.
-     * @restrict Dimension of the result instance type must be the same as the dimension of this type.
-     * @tparam unit_inst_t The result unit instance type (e.g. milliseconds).
-     * @returns The value in given unit.
-     **/
-    template <bool enable = explicit_unit, class = typename std::enable_if<enable>::type>
-    float32_t get() const {
-        return this->value;
-    }
-
     /* @brief Constructor - sets value.
      * @tparam unit_inst_t Unit instance type.
      * @param [unnamed] The unit instance.
@@ -218,178 +207,203 @@ public:
     template <typename unit_inst2, bool explicit_unit2>
     constexpr dim_class(const dim_class<dim, unit_inst2, explicit_unit2>& other)
         : value(rescale_unit<unit_inst2, unit_inst_t>(other.value)) {}
-
-    /* @brief Adds two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns The result of the addition.
+    
+    /* @brief Gets value in given unit.
+     * @restrict Type must be unit instance type.
+     * @restrict Dimension of the result instance type must be the same as the dimension of this type.
+     * @tparam unit_inst_t The result unit instance type (e.g. milliseconds).
+     * @returns The value in given unit.
      **/
-    constexpr dim_class operator+(const dim_class& other) const {
-        return dim_class(this->value + other.value, nullptr);
+    template <bool enable = explicit_unit, class = typename std::enable_if<enable>::type>
+    constexpr float32_t get() const {
+        return this->value;
     }
 
-    /* @brief Subtracts two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns The result of the subtraction.
-     **/
-    constexpr dim_class operator-(const dim_class& other) const {
-        return dim_class(this->value - other.value, nullptr);
-    }
-
-    /* @brief Adds two dimension class instances and stores result in this instance.
-     * @param other The other dimension class instance.
-     * @returns This dimension class instance.
-     **/
-    dim_class& operator+=(const dim_class& other) {
-        this->value += other.value;
-        return *this;
-    }
-
-    /* @brief Subtracts two dimension class instances and stores result in this instance.
-     * @param other The other dimension class instance.
-     * @returns This dimension class instance.
-     **/
-    dim_class& operator-=(const dim_class& other) {
-        this->value -= other.value;
-        return *this;
-    }
-
-    /* @brief Compares two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns Boolean value indicating if the two dimension class instances are equal.
-     **/
-    bool operator==(const dim_class& other) const {
-        return this->value == other.value;
-    }
-
-    /* @brief Compares two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns Boolean value indicating if the two dimension class instances are not equal.
-     **/
-    bool operator!=(const dim_class& other) const {
-        return this->value != other.value;
-    }
-
-    /* @brief Compares two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns Boolean value indicating if this dimension class instances is greater than the other.
-     **/
-    bool operator>(const dim_class& other) const {
-        return this->value > other.value;
-    }
-
-    /* @brief Compares two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns Boolean value indicating if this dimension class instances is smaller than the other.
-     **/
-    bool operator<(const dim_class& other) const {
-        return this->value < other.value;
-    }
-
-    /* @brief Compares two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns Boolean value indicating if this dimension class instances is greater-or-equal than the other.
-     **/
-    bool operator>=(const dim_class& other) const {
-        return this->value >= other.value;
-    }
-
-    /* @brief Compares two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns Boolean value indicating if this dimension class instances is smaller-or-equal than the other.
-     **/
-    bool operator<=(const dim_class& other) const {
-        return this->value <= other.value;
-    }
-
-    /* @brief Gets ratio of two dimension class instances.
-     * @param other The other dimension class instance.
-     * @returns The ratio of the dimension class instances.
-     **/
-    constexpr float32_t operator/(const dim_class& other) const {
-        return this->value / other.value;
-    }
-
-    /* @brief Multiplies this value with a constant.
-     * @restrict Type of the constant must be arithmetic.
-     * @tparam T Type of the constant.
-     * @param c The constant.
-     * @returns The result dimension class instance.
-     **/
-    template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-    constexpr dim_class operator*(const T& c) const {
-        return dim_class(c * this->value, nullptr);
-    }
-
-    /* @brief Multiplies dimension class instance with a constant.
-     * @restrict Type of the constant must be arithmetic.
-     * @param c The constant.
-     * @param _dim_class_inst The dimension class instance.
-     * @returns The result dimension class instance.
-     **/
-    template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-    friend constexpr dim_class operator*(const T& c, const dim_class& _dim_class_inst) {
-        return _dim_class_inst * c;
-    }
-
-    /* @brief Divides this value by a constant.
-     * @restrict Type of the constant must be arithmetic.
-     * @param c The constant.
-     * @returns The result dimension class instance.
-     **/
-    template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-    constexpr dim_class operator/(const T& c) const {
-        return dim_class(this->value / c, nullptr);
-    }
-
-    /* @brief Multiplies this value with -1.
-     * @returns The result dimension class instance.
-     **/
-    constexpr dim_class operator-() const {
-        return (*this) * (-1);
-    }
-
-    /* @brief Multiplies this value with a constant and stores result in this instance.
-     * @restrict Type of the constant must be arithmetic.
-     * @param c The constant.
-     * @returns This dimension class instance.
-     **/
-    template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-    dim_class& operator*=(const T& c) {
-        this->value *= c;
-        return *this;
-    }
-
-    /* @brief Divides this value by a constant and stores result in this instance.
-     * @restrict Type of the constant must be arithmetic.
-     * @param c The constant.
-     * @returns This dimension class instance.
-     **/
-    template <typename T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-    dim_class& operator/=(const T& c) {
-        this->value /= c;
-        return *this;
-    }
-
-    /* @brief Multiplies this value with another dimension class instance.
-     * @param other The other dimension class instance.
-     * @returns The result dimension class instance.
-     **/
-    template <typename _dim_class2, typename _res_dim_class = dim_class<mul_dim<dim, _dim_class2::dim>::value,
-            mul_unit_instance<unit_inst_t, typename _dim_class2::unit_inst_t>>>
-    constexpr _res_dim_class operator*(const _dim_class2& other) const {
-        return _res_dim_class(this->value * other.value, nullptr);
-    }
-
-    /* @brief Divides this value by another dimension class instance.
-     * @param other The other dimension class instance.
-     * @returns The result dimension class instance.
-     **/
-    template <typename _dim_class2, typename _res_dim_class = dim_class<div_dim<dim, _dim_class2::dim>::value,
-            div_unit_instance<unit_inst_t, typename _dim_class2::unit_inst_t>>>
-    constexpr _res_dim_class operator/(const _dim_class2& other) const {
-        return _res_dim_class(this->value / other.value, nullptr);
+    template <bool enable = explicit_unit, class = typename std::enable_if<enable>::type>
+    void set(float32_t _value) {
+        this->value = _value;
     }
 };
+
+/* @brief Adds two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns The result of the addition.
+ **/
+template <typename T1, typename T2>
+inline constexpr typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, T1>::type operator+(const T1& d1, const T2& d2) {
+    return T1(d1.template get<true>() + static_cast<T1>(d2).template get<true>(), nullptr);
+}
+
+/* @brief Subtracts two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns The result of the subtraction.
+ **/
+template <typename T1, typename T2>
+inline constexpr typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, T1>::type operator-(const T1& d1, const T2& d2) {
+    return T1(d1.template get<true>() - static_cast<T2>(d2).template get<true>(), nullptr);
+}
+
+/* @brief Adds two dimension class instances and stores result in this instance.
+ * @param other The other dimension class instance.
+ * @returns This dimension class instance.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, void>::type operator+=(T1& d1, const T2& d2) {
+    d1.template set<true>(d1.template get<true>() + static_cast<T1>(d2).template get<true>());
+}
+
+/* @brief Subtracts two dimension class instances and stores result in this instance.
+ * @param other The other dimension class instance.
+ * @returns This dimension class instance.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, void>::type operator-=(T1& d1, const T2& d2) {
+    d1.template set<true>(d1.template get<true>() - static_cast<T1>(d2).template get<true>());
+}
+
+ /* @brief Compares two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns Boolean value indicating if the two dimension class instances are equal.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, bool>::type operator==(const T1& d1, const T2& d2) {
+    return d1.template get<true>() == static_cast<T1>(d2).template get<true>();
+}
+
+/* @brief Compares two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns Boolean value indicating if the two dimension class instances are not equal.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, bool>::type operator!=(const T1& d1, const T2& d2) {
+    return d1.template get<true>() != static_cast<T1>(d2).template get<true>();
+}
+
+/* @brief Compares two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns Boolean value indicating if this dimension class instances is greater than the other.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, bool>::type operator>(const T1& d1, const T2& d2) {
+    return d1.template get<true>() > static_cast<T1>(d2).template get<true>();
+}
+
+/* @brief Compares two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns Boolean value indicating if this dimension class instances is smaller than the other.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, bool>::type operator<(const T1& d1, const T2& d2) {
+    return d1.template get<true>() < static_cast<T1>(d2).template get<true>();
+}
+
+/* @brief Compares two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns Boolean value indicating if this dimension class instances is greater-or-equal than the other.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, bool>::type operator>=(const T1& d1, const T2& d2) {
+    return d1.template get<true>() >= static_cast<T1>(d2).template get<true>();
+}
+
+/* @brief Compares two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns Boolean value indicating if this dimension class instances is smaller-or-equal than the other.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, bool>::type operator<=(const T1& d1, const T2& d2) {
+    return d1.template get<true>() <= static_cast<T1>(d2).template get<true>();
+}
+
+/* @brief Gets ratio of two dimension class instances.
+ * @param other The other dimension class instance.
+ * @returns The ratio of the dimension class instances.
+ **/
+template <typename T1, typename T2>
+inline constexpr typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, float32_t>::type operator/(const T1& d1, const T2& d2) {
+    return d1.template get<true>() / static_cast<T1>(d2).template get<true>();
+}
+
+/* @brief Multiplies this value with another dimension class instance.
+ * @param other The other dimension class instance.
+ * @returns The result dimension class instance.
+ **/
+template <typename T1, typename T2, typename R = dim_class<mul_dim<T1::dim, T2::dim>::value, mul_unit_instance<typename T1::unit_inst_t, typename T2::unit_inst_t>>>
+inline constexpr typename std::enable_if<T1::is_dim_class && T2::is_dim_class, R>::type operator*(const T1& d1, const T2& d2) {
+    return R(d1.template get<true>() * d2.template get<true>(), nullptr);
+}
+
+/* @brief Divides this value by another dimension class instance.
+ * @param other The other dimension class instance.
+ * @returns The result dimension class instance.
+ **/
+template <typename T1, typename T2, typename R = dim_class<div_dim<T1::dim, T2::dim>::value, div_unit_instance<typename T1::unit_inst_t, typename T2::unit_inst_t>>>
+inline constexpr typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim != T2::dim, R>::type operator/(const T1& d1, const T2& d2) {
+    return R(d1.template get<true>() / d2.template get<true>(), nullptr);
+}
+
+/* @brief Multiplies this value with a constant.
+ * @restrict Type of the constant must be arithmetic.
+ * @tparam T Type of the constant.
+ * @param c The constant.
+ * @returns The result dimension class instance.
+ **/
+template <typename T1, typename T2>
+inline constexpr typename std::enable_if<T1::is_dim_class && std::is_arithmetic<T2>::value, T1>::type operator*(const T1& d, const T2& c) {
+    return T1(d.template get<true>() * c, nullptr);
+}
+
+/* @brief Multiplies dimension class instance with a constant.
+ * @restrict Type of the constant must be arithmetic.
+ * @param c The constant.
+ * @param _dim_class_inst The dimension class instance.
+ * @returns The result dimension class instance.
+ **/
+template <typename T1, typename T2>
+inline constexpr typename std::enable_if<T1::is_dim_class && std::is_arithmetic<T2>::value, T1>::type operator*(const T2& c, const T1& d) {
+    return d * c;
+}
+
+/* @brief Divides this value by a constant.
+ * @restrict Type of the constant must be arithmetic.
+ * @param c The constant.
+ * @returns The result dimension class instance.
+ **/
+template <typename T1, typename T2>
+inline constexpr typename std::enable_if<T1::is_dim_class && std::is_arithmetic<T2>::value, T1>::type operator/(const T1& d, const T2& c) {
+    return T1(d.template get<true>() / c, nullptr);
+}
+
+/* @brief Multiplies this value with -1.
+ * @returns The result dimension class instance.
+ **/
+template <typename T1>
+inline constexpr typename std::enable_if<T1::is_dim_class, T1>::type operator-(const T1& d) {
+    return T1(-d.template get<true>(), nullptr);
+}
+
+/* @brief Multiplies this value with a constant and stores result in this instance.
+ * @restrict Type of the constant must be arithmetic.
+ * @param c The constant.
+ * @returns This dimension class instance.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && std::is_arithmetic<T2>::value, T1&>::type operator*=(T1& d, const T2& c) {
+    d.template set<true>(d.template get<true>() * c);
+    return d;
+}
+
+/* @brief Divides this value by a constant and stores result in this instance.
+ * @restrict Type of the constant must be arithmetic.
+ * @param c The constant.
+ * @returns This dimension class instance.
+ **/
+template <typename T1, typename T2>
+inline typename std::enable_if<T1::is_dim_class && std::is_arithmetic<T2>::value, T1&>::type operator/=(T1& d, const T2& c) {
+    d.template set<true>(d.template get<true>() / c);
+    return d;
+}
+
 } // namespace detail
 
 dimension_connections(Dimension::speed, Dimension::time, Dimension::distance)           // Dimension connections for speed, time and distance (speed * time = distance).

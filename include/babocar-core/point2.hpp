@@ -33,92 +33,6 @@ template <typename T> struct Point2 {
         : X(_X)
         , Y(_Y) {}
 
-    /* @brief Adds coordinates of this and the other point.
-    * @param other The other point.
-    * @returns The result of the addition.
-    **/
-    Point2<T> operator+(const Point2<T>& other) const {
-        return Point2<T>(this->X + other.X, this->Y + other.Y);
-    }
-
-    /* @brief Subtracts coordinates of the other point from the coordinates of this point.
-     * @param other The other point.
-     * @returns The result of the subtraction.
-     **/
-    Point2<T> operator-(const Point2<T>& other) const {
-        return Point2<T>(this->X - other.X, this->Y - other.Y);
-    }
-
-    /* @brief Adds coordinates of this and the other point and stores the result in this point.
-     * @param other The other point.
-     * @returns This point.
-     **/
-    Point2<T>& operator+=(const Point2<T>& other) {
-        this->X += other.X;
-        this->Y += other.Y;
-        return *this;
-    }
-
-    /* @brief Subtracts coordinates of the other point from the coordinates of this point and stores the result in this point.
-     * @param other The other point.
-     * @returns This point.
-     **/
-    Point2<T>& operator-=(const Point2<T>& other) {
-        this->X -= other.X;
-        this->Y -= other.Y;
-        return *this;
-    }
-
-    /* @brief Multiplies coordinates of the point with the given constant.
-     * @param c The constant.
-     * @returns The result of the multiplication.
-     **/
-    template <typename T2, class = typename std::enable_if<std::is_arithmetic<T2>::value>::type>
-    Point2<T> operator*(const T2& c) const {
-        return Point2<T>(this->X * c, this->Y * c);
-    }
-
-    /* @brief Divides coordinates of the point by the given constant.
-     * @param c The constant.
-     * @returns The result of the division.
-     **/
-    template <typename T2, class = typename std::enable_if<std::is_arithmetic<T2>::value>::type>
-    Point2<T> operator/(const T2& c) const {
-        return Point2<T>(this->X / c, this->Y / c);
-    }
-
-    /* @brief Multiplies coordinates of the point with the given constant and stores the result in the point.
-     * @param c The constant.
-     * @returns This point.
-     **/
-    template <typename T2, class = typename std::enable_if<std::is_arithmetic<T2>::value>::type>
-    Point2<T>& operator*=(const T2& c) {
-        this->X *= c;
-        this->Y *= c;
-        return *this;
-    }
-
-    /* @brief Divides coordinates of the point by the given constant and stores the result in the point.
-     * @param c The constant.
-     * @returns This point.
-     **/
-    template <typename T2, class = typename std::enable_if<std::is_arithmetic<T2>::value>::type>
-    Point2<T>& operator/=(const T2& c) {
-        this->X /= c;
-        this->Y /= c;
-        return *this;
-    }
-
-    /* @brief Multiplies coordinates of the point with the given constant.
-     * @param c The constant.
-     * @param p The point.
-     * @returns The result of the multiplication.
-     **/
-    template <typename T2, class = typename std::enable_if<std::is_arithmetic<T2>::value>::type>
-    friend Point2<T> operator*(const T2& c, const Point2<T>& p) {
-        return p * c;
-    }
-
     /* @brief Casts point to another type.
      * @returns Point cast to another type.
      **/
@@ -131,7 +45,8 @@ template <typename T> struct Point2 {
      * @param other The other point.
      * @returns Boolean value indicating if the two points are equal.
      **/
-    bool operator==(const Point2<T>& other) const {
+    template <typename T2>
+    bool operator==(const Point2<T2>& other) const {
         return this->X == other.X && this->Y == other.Y;
     }
 
@@ -139,7 +54,8 @@ template <typename T> struct Point2 {
      * @param other The other point.
      * @returns Boolean value indicating if the two points are not equal.
      **/
-    bool operator!=(const Point2<T>& other) const {
+    template <typename T2>
+    bool operator!=(const Point2<T2>& other) const {
         return this->X != other.X || this->Y != other.Y;
     }
 
@@ -149,27 +65,21 @@ template <typename T> struct Point2 {
     T length() const {
         return bcr::pythag(this->X, this->Y);
     }
-
-    /* @brief Calculates square of the distance between the two points.
-     * @param other The other point.
-     * @returns The distance between the two points.
-     **/
-    T distance_square(Point2<T> other) const {
-        return bcr::pythag_square(this->X - other.X, this->Y - other.Y);
-    }
     
     /* @brief Calculates distance between the two points.
      * @param other The other point.
      * @returns The distance between the two points.
      **/
-    T distance(Point2<T> other) const {
+    template <typename T2>
+    T distance(Point2<T2> other) const {
         return bcr::pythag(this->X - other.X, this->Y - other.Y);
     }
 
     /* @brief Calculates angle of given vector using this point as the origo.
      * @param other The vector.
      **/
-    angle_t getAngle(const Vec2<T>& other) const {
+    template <typename T2>
+    angle_t getAngle(const Vec2<T2>& other) const {
         return bcr::atan2(other.Y - this->Y, other.X - this->X);
     }
 
@@ -178,7 +88,8 @@ template <typename T> struct Point2 {
      * @param otherWeight The weight of the other point relative to this point - 1 by default.
      * @returns The average of the two points.
      **/
-    Point2<T> average(const Point2<T>& other, float32_t otherWeight = 1.0f) const {
+    template <typename T2>
+    Point2<T> average(const Point2<T2>& other, float32_t otherWeight = 1.0f) const {
         float32_t weightSum = 1.0f + otherWeight;
         return Point2<T>((this->X + other.X * otherWeight) / weightSum, (this->Y + other.Y * otherWeight) / weightSum);
     }
@@ -192,6 +103,96 @@ template <typename T> struct Point2 {
 
     bool isInside(const bbox2<T>& bbox) const;
 };
+
+/* @brief Adds coordinates of this and the other point.
+* @param other The other point.
+* @returns The result of the addition.
+**/
+template <typename T1, typename T2>
+Point2<T1> operator+(const Point2<T1>& p1, const Point2<T2>& p2) {
+    return Point2<T1>(p1.X + p2.X, p1.Y + p2.Y);
+}
+
+/* @brief Subtracts coordinates of the other point from the coordinates of this point.
+ * @param other The other point.
+ * @returns The result of the subtraction.
+ **/
+template <typename T1, typename T2>
+Point2<T1> operator-(const Point2<T1>& p1, const Point2<T2>& p2) {
+    return Point2<T1>(p1.X - p2.X, p1.Y - p2.Y);
+}
+
+/* @brief Adds coordinates of this and the other point and stores the result in this point.
+ * @param other The other point.
+ * @returns This point.
+ **/
+template <typename T1, typename T2>
+Point2<T1>& operator+=(Point2<T1>& p1, const Point2<T2>& p2) {
+    p1.X += p2.X;
+    p1.Y += p2.Y;
+    return p1;
+}
+
+/* @brief Subtracts coordinates of the other point from the coordinates of this point and stores the result in this point.
+ * @param other The other point.
+ * @returns This point.
+ **/
+template <typename T1, typename T2>
+Point2<T1>& operator-=(Point2<T1>& p1, const Point2<T2>& p2) {
+    p1.X -= p2.X;
+    p1.Y -= p2.Y;
+    return p1;
+}
+
+/* @brief Multiplies coordinates of the point with the given constant.
+ * @param c The constant.
+ * @returns The result of the multiplication.
+ **/
+template <typename T1, typename T2, typename R = decltype (std::declval<T1>() * std::declval<T2>())>
+typename std::enable_if<!is_base_of_template<Point2, T2>::value, Point2<R>>::type operator*(const Point2<T1>& p, const T2& c) {
+    return Point2<R>(p.X * c, p.Y * c);
+}
+
+/* @brief Divides coordinates of the point by the given constant.
+ * @param c The constant.
+ * @returns The result of the division.
+ **/
+template <typename T1, typename T2, typename R = decltype (std::declval<T1>() / std::declval<T2>())>
+typename std::enable_if<!is_base_of_template<Point2, T2>::value, Point2<R>>::type operator/(const Point2<T1>& p, const T2& c) {
+    return Point2<R>(p.X / c, p.Y / c);
+}
+
+/* @brief Multiplies coordinates of the point with the given constant and stores the result in the point.
+ * @param c The constant.
+ * @returns This point.
+ **/
+template <typename T1, typename T2>
+typename std::enable_if<std::is_arithmetic<T2>::value, Point2<T1>&>::type operator*=(Point2<T1>& p, const T2& c) {
+    p.X *= c;
+    p.Y *= c;
+    return p;
+}
+
+/* @brief Divides coordinates of the point by the given constant and stores the result in the point.
+ * @param c The constant.
+ * @returns This point.
+ **/
+template <typename T1, typename T2>
+typename std::enable_if<std::is_arithmetic<T2>::value, Point2<T1>&>::type operator/=(Point2<T1>& p, const T2& c) {
+    p.X /= c;
+    p.Y /= c;
+    return p;
+}
+
+/* @brief Multiplies coordinates of the point with the given constant.
+ * @param c The constant.
+ * @param p The point.
+ * @returns The result of the multiplication.
+ **/
+template <typename T1, typename T2>
+typename std::enable_if<std::is_arithmetic<T2>::value, Point2<T1>&>::type operator*=(const T2& c, const Point2<T1>& p) {
+    return p * c;
+}
 
 /* @brief 2-dimensional bounding box.
  * @tparam T Numeric type of the coordinates.

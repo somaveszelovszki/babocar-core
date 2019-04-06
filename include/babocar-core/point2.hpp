@@ -80,7 +80,7 @@ template <typename T> struct Point2 {
      **/
     template <typename T2>
     angle_t getAngle(const Vec2<T2>& other) const {
-        return bcr::atan2(other.Y - this->Y, other.X - this->X);
+        return bcr::atan2(other.Y, other.X) - bcr::atan2(this->Y, this->X);
     }
 
     /* @brief Calculates weighted average of the two points.

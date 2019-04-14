@@ -240,7 +240,7 @@ inline constexpr typename std::enable_if<T1::is_dim_class && T2::is_dim_class &&
  **/
 template <typename T1, typename T2>
 inline constexpr typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim == T2::dim, T1>::type operator-(const T1& d1, const T2& d2) {
-    return T1(d1.template get<true>() - static_cast<T2>(d2).template get<true>(), nullptr);
+    return T1(d1.template get<true>() - static_cast<T1>(d2).template get<true>(), nullptr);
 }
 
 /* @brief Adds two dimension class instances and stores result in this instance.

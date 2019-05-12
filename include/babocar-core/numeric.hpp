@@ -147,6 +147,17 @@ inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type abs(const 
     return value >= T(0) ? value : -value;
 }
 
+
+/**
+ * @brief Checks if value is infinity.
+ * @param value The value.
+ * @returns Boolean value indicating if the value is infinity.
+ */
+template <typename T>
+inline typename std::enable_if<std::is_arithmetic<T>::value, bool>::type isinf(const T& value) {
+    return std::isinf(value);
+}
+
 /**
  * @brief Gets sign of the value.
  * @restrict Type must be arithmetic.

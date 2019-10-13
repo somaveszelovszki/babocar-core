@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>babocar-core</name>
+  <name>babocar_core</name>
   <version>0.0.0</version>
   <description>Core library for the self-driving hardware and software project.</description>
 

@@ -16,3 +16,55 @@ TEST(linalg, lineNorm) {
     Point2f p(1.0f, 5.0f);
     EXPECT_FLOAT_EQ(bcr::distance(line, p), bcr::distance(line2, p));
 }
+
+TEST(linalg, lineCircle_intersection_0_solutions) {
+    const Line2f line(0.0f, -1.0f, 2.0f); // y = 0*x + 2
+    const Point2f circleCenter(4.0f, 5.0f);
+    const float32_t circleRadius = 2.0f;
+
+    const std::pair<Point2f, Point2f> intersections = bcr::lineCircle_intersection(line, circleCenter, circleRadius);
+
+    EXPECT_TRUE(std::isnan(intersections.first.X));
+    EXPECT_TRUE(std::isnan(intersections.first.Y));
+    EXPECT_TRUE(std::isnan(intersections.second.X));
+    EXPECT_TRUE(std::isnan(intersections.second.Y));
+}
+
+TEST(linalg, lineCircle_intersection_1_solution_1) {
+    const Line2f line(0.0f, -1.0f, 3.0f); // y = 0*x + 3
+    const Point2f circleCenter(4.0f, 5.0f);
+    const float32_t circleRadius = 2.0f;
+
+    const std::pair<Point2f, Point2f> intersections = bcr::lineCircle_intersection(line, circleCenter, circleRadius);
+
+    EXPECT_NEAR(4.0f, intersections.first.X, 0.0001f);
+    EXPECT_NEAR(3.0f, intersections.first.Y, 0.0001f);
+    EXPECT_TRUE(std::isnan(intersections.second.X));
+    EXPECT_TRUE(std::isnan(intersections.second.Y));
+}
+
+TEST(linalg, lineCircle_intersection_2_solutions) {
+    const Line2f line(0.0f, -1.0f, 5.0f); // y = 0*x + 5
+    const Point2f circleCenter(4.0f, 5.0f);
+    const float32_t circleRadius = 2.0f;
+
+    const std::pair<Point2f, Point2f> intersections = bcr::lineCircle_intersection(line, circleCenter, circleRadius);
+
+    EXPECT_NEAR(6.0f, intersections.first.X, 0.0001f);
+    EXPECT_NEAR(5.0f, intersections.first.Y, 0.0001f);
+    EXPECT_NEAR(2.0f, intersections.second.X, 0.0001f);
+    EXPECT_NEAR(5.0f, intersections.second.Y, 0.0001f);
+}
+
+TEST(linalg, lineCircle_intersection_2_solutions_2) {
+    const Line2d line(1.0, -1.0, 5.0); // y = x + 5
+    const Point2d circleCenter(4.0, 9.0);
+    const float64_t circleRadius = 2.0f;
+
+    const std::pair<Point2d, Point2d> intersections = bcr::lineCircle_intersection(line, circleCenter, circleRadius);
+
+    EXPECT_NEAR(4.0 + std::sqrt(2), intersections.first.X, 0.0001);
+    EXPECT_NEAR(9.0 + std::sqrt(2), intersections.first.Y, 0.0001);
+    EXPECT_NEAR(4.0 - std::sqrt(2), intersections.second.X, 0.0001);
+    EXPECT_NEAR(9.0 - std::sqrt(2), intersections.second.Y, 0.0001);
+}

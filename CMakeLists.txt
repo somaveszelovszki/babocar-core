@@ -191,10 +191,11 @@ add_library(${PROJECT_NAME}
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test
   test/run_tests.cpp
+  test/eq_solver.cpp
+  test/linalg.cpp
+  test/ring_buffer.cpp
   test/units.cpp
   test/vec.cpp
-  test/ring_buffer.cpp
-  test/linalg.cpp
 )
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})

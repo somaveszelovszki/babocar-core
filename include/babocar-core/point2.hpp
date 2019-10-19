@@ -252,6 +252,7 @@ bool Point2<T>::isInside(const Point2<T>& a, const Point2<T>& b, const Point2<T>
 
 typedef Point2<int32_t>     Point2i, Vec2i;         // 32-bit integer types.
 typedef Point2<float32_t>   Point2f, Vec2f;         // 32-bit floating point types.
+typedef Point2<float64_t>   Point2d, Vec2d;         // 64-bit floating point types.
 
 typedef Point2<meter_t>   Point2m, Vec2m;           // meter types.
 typedef Point2<centimeter_t>   Point2cm, Vec2cm;    // centimeter types.

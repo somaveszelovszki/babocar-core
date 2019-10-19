@@ -40,8 +40,8 @@ Pose ros_convert(const geometry_msgs::Pose& pose) {
 
 geometry_msgs::Twist ros_convert(const Twist& twist) {
     geometry_msgs::Twist result;
-    result.linear.x = static_cast<m_per_sec_t>(twist.X).get();
-    result.linear.y = static_cast<m_per_sec_t>(twist.Y).get();
+    result.linear.x = static_cast<m_per_sec_t>(twist.speed.X).get();
+    result.linear.y = static_cast<m_per_sec_t>(twist.speed.Y).get();
     result.linear.z = 0.0;
     result.angular.x = 0.0;
     result.angular.y = 0.0;
@@ -51,8 +51,8 @@ geometry_msgs::Twist ros_convert(const Twist& twist) {
 
 Twist ros_convert(const geometry_msgs::Twist& twist) {
     Twist result;
-    result.X = m_per_sec_t(twist.linear.x);
-    result.Y = m_per_sec_t(twist.linear.y);
+    result.speed.X = m_per_sec_t(twist.linear.x);
+    result.speed.Y = m_per_sec_t(twist.linear.y);
     result.ang_vel = rad_per_sec_t(twist.angular.z);
     return result;
 }

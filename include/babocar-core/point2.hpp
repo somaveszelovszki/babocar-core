@@ -102,6 +102,16 @@ template <typename T> struct Point2 {
     bool isInside(const Point2<T>& a, const Point2<T>& b, const Point2<T>& c) const;
 
     bool isInside(const bbox2<T>& bbox) const;
+
+    void rotate(float64_t sin_, float64_t cos_) {
+        const Point2<T> prev = *this;
+        this->X = cos_ * prev.X - sin_ * prev.Y;
+        this->Y = sin_ * prev.X + cos_ * prev.Y;
+    }
+
+    void rotate(radian_t angle) {
+        this->rotate(bcr::sin(angle), bcr::cos(angle));
+    }
 };
 
 /* @brief Adds coordinates of this and the other point.
@@ -250,13 +260,13 @@ bool Point2<T>::isInside(const Point2<T>& a, const Point2<T>& b, const Point2<T>
     return abs(static_cast<int8_t>(sA) + static_cast<int8_t>(sB) + static_cast<int8_t>(sC)) == 3;
 }
 
-typedef Point2<int32_t>     Point2i, Vec2i;         // 32-bit integer types.
-typedef Point2<float32_t>   Point2f, Vec2f;         // 32-bit floating point types.
-typedef Point2<float64_t>   Point2d, Vec2d;         // 64-bit floating point types.
+typedef Point2<int32_t>      Point2i, Vec2i;     // 32-bit integer types
+typedef Point2<float32_t>    Point2f, Vec2f;     // 32-bit floating point types
+typedef Point2<float64_t>    Point2d, Vec2d;     // 64-bit floating point types
 
-typedef Point2<meter_t>   Point2m, Vec2m;           // meter types.
-typedef Point2<centimeter_t>   Point2cm, Vec2cm;    // centimeter types.
-typedef Point2<m_per_sec_t>   Point2mps, Vec2mps;   // meter/sec types.
+typedef Point2<meter_t>      Point2m, Vec2m;     // meter types
+typedef Point2<centimeter_t> Point2cm, Vec2cm;   // centimeter types
+typedef Point2<m_per_sec_t>  Point2mps, Vec2mps; // meter/sec types
 
 } // namespace bcr
 

@@ -23,6 +23,7 @@ enum class Dimension : uint8_t {
     dimension_name(speed),                  // [km/h, m/sec, mm/sec]
     dimension_name(acceleration),           // [m/sec^2, mm/sec^2]
     dimension_name(angular_velocity),       // [rad/sec]
+    dimension_name(angular_acceleration),   // [rad/sec^2]
     dimension_name(temperature),            // [°C]
 
     dimension_name(magnetic_flux),          // [Maxwell]
@@ -408,15 +409,26 @@ inline typename std::enable_if<T1::is_dim_class && std::is_arithmetic<T2>::value
 
 } // namespace detail
 
-dimension_connections(Dimension::speed, Dimension::time, Dimension::distance)           // Dimension connections for speed, time and distance (speed * time = distance).
-dimension_connections(Dimension::acceleration, Dimension::time, Dimension::speed)       // Dimension connections for acceleration, time and speed (acceleration * time = speed).
-dimension_connections(Dimension::angular_velocity, Dimension::time, Dimension::angle)   // Dimension connections for angular velocity, time and angle (angular velocity * time = angle).
+dimension_connections(Dimension::speed, Dimension::time, Dimension::distance)                        // Dimension connections for speed, time and distance (speed * time = distance).
+dimension_connections(Dimension::acceleration, Dimension::time, Dimension::speed)                    // Dimension connections for acceleration, time and speed (acceleration * time = speed).
+dimension_connections(Dimension::angular_velocity, Dimension::time, Dimension::angle)                // Dimension connections for angular velocity, time and angle (angular velocity * time = angle).
+dimension_connections(Dimension::angular_acceleration, Dimension::time, Dimension::angular_velocity) // Dimension connections for angular velocity, time and angle (angular acceleration * time = angular velocity).
 
-namespace detail {
-template <Dimension dim> struct mul_dim<Dimension::angle, dim>  { static constexpr Dimension value = dim; };
-template <Dimension dim> struct mul_dim<dim, Dimension::angle>  { static constexpr Dimension value = dim; };
-template <Dimension dim> struct div_dim<dim, Dimension::angle>  { static constexpr Dimension value = dim; };
-} // namespace detail
+dimension_connections(Dimension::angle, Dimension::distance, Dimension::distance)                    // Dimension connections for angle, distance and distance (angle * distance = distance).
+dimension_connections(Dimension::angular_velocity, Dimension::distance, Dimension::speed)            // Dimension connections for angular velocity, distance and speed (angular velocity * distance = speed).
+
+// namespace detail {
+// // dimension of [radian_t] is [1], therefore dimension of [X * radian_t] is [X]
+// template <Dimension dim> struct mul_dim<Dimension::angle, dim> { static constexpr Dimension value = dim; };
+// template <Dimension dim> struct mul_dim<dim, Dimension::angle> { static constexpr Dimension value = dim; };
+// template <Dimension dim> struct div_dim<dim, Dimension::angle> { static constexpr Dimension value = dim; };
+
+// // dimension of [rad_per_sec_t] is [1/sec], therefore dimension of [X * rad_per_sec_t] is [X/sec]
+// template <Dimension dim> struct mul_dim<Dimension::angular_velocity, dim> { static constexpr Dimension value = div_dim<dim, Dimension::time>::value; };
+// template <Dimension dim> struct mul_dim<dim, Dimension::angular_velocity> { static constexpr Dimension value = div_dim<dim, Dimension::time>::value; };
+// template <Dimension dim> struct div_dim<dim, Dimension::angular_velocity> { static constexpr Dimension value = mul_dim<dim, Dimension::time>::value; };
+
+// } // namespace detail
 
 #define create_unit_instance_with_unit_prefix(dim, mul, unit)                                                           \
 typedef detail::dim_class<Dimension::dim, detail::unit_instance<Dimension::dim, Unit::mul>, true> mul ## unit ## _t;    \
@@ -465,7 +477,6 @@ create_unit_instance_without_unit_prefix(angle, deg_to_rad, degree);
 create_unit_instances(temperature, celsius);
 create_unit_instances(magnetic_flux, maxwell);
 
-typedef detail::dim_class<Dimension::speed> speed_t;
 create_div_unit_instance(kilometer, hour, km_per_hour);
 create_div_unit_instance(meter, second, m_per_sec);
 create_div_unit_instance(centimeter, second, cm_per_sec);
@@ -475,9 +486,11 @@ create_div_unit_instance(m_per_sec, second, m_per_sec2);
 create_div_unit_instance(cm_per_sec, second, cm_per_sec2);
 create_div_unit_instance(mm_per_sec, second, mm_per_sec2);
 
-typedef detail::dim_class<Dimension::angular_velocity> angular_velocity_t;
 create_div_unit_instance(radian, second, rad_per_sec);
 create_div_unit_instance(degree, second, deg_per_sec);
+
+create_div_unit_instance(rad_per_sec, second, rad_per_sec2);
+create_div_unit_instance(deg_per_sec, second, deg_per_sec2);
 
 } // namespace bcr
 

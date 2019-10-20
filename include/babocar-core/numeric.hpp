@@ -159,6 +159,16 @@ inline typename std::enable_if<std::is_arithmetic<T>::value, bool>::type isinf(c
 }
 
 /**
+ * @brief Checks if value is NaN.
+ * @param value The value.
+ * @returns Boolean value indicating if the value is NaN.
+ */
+template <typename T>
+inline typename std::enable_if<std::is_arithmetic<T>::value, bool>::type isnan(const T& value) {
+    return std::isnan(value);
+}
+
+/**
  * @brief Gets sign of the value.
  * @restrict Type must be arithmetic.
  * @param value The value.

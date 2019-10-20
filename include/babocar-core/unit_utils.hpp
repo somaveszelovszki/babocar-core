@@ -19,6 +19,16 @@ inline typename std::enable_if<T::is_dim_class, T>::type abs(const T& value) {
 }
 
 /**
+ * @brief Checks if value is NaN.
+ * @param value The value.
+ * @returns Boolean value indicating if the value is NaN.
+ */
+template <typename T>
+inline typename std::enable_if<T::is_dim_class, bool>::type isnan(const T& value) {
+    return std::isnan(value.template get<true>());
+}
+
+/**
  * @brief Checks if value is infinity.
  * @param value The value.
  * @returns Boolean value indicating if the value is infinity.

@@ -5,7 +5,7 @@
 
 namespace bcr {
 struct Pose {
-    Point2<meter_t> pos;
+    Point2m pos;
     radian_t angle;
 };
 } // namespace bcr

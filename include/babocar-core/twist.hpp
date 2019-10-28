@@ -5,7 +5,7 @@
 
 namespace bcr {
 struct Twist {
-    Point2<m_per_sec_t> speed;
+    Point2mps speed;
     rad_per_sec_t ang_vel;
 };
 } // namespace bcr

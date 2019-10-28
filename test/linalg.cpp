@@ -68,3 +68,13 @@ TEST(linalg, lineCircle_intersection_2_solutions_2) {
     EXPECT_NEAR(4.0 - std::sqrt(2), intersections.second.X, 0.0001);
     EXPECT_NEAR(9.0 - std::sqrt(2), intersections.second.Y, 0.0001);
 }
+
+TEST(linalg, lineLine_intersection) {
+    const Line2d line1(1.0, -1.0, 5.0); // y = x + 5
+    const Line2d line2(0.0, -1.0, 10.0); // y = 10
+
+    const Point2d intersection = bcr::lineLine_intersection(line1, line2);
+
+    EXPECT_NEAR(5.0, intersection.X, 0.0001);
+    EXPECT_NEAR(10.0, intersection.Y, 0.0001);
+}

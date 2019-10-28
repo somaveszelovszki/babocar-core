@@ -47,5 +47,16 @@ std::pair<Point2<T>, Point2<T>> lineCircle_intersection(const Line2<T>& line, co
     return result;
 }
 
+template <typename T>
+Point2<T> lineLine_intersection(const Line2<T>& line1, const Line2<T>& line2) {
+    Point2<T> intersection = { std::numeric_limits<T>::infinity(), std::numeric_limits<T>::infinity() };
+    const T det = line2.a * line1.b - line1.a * line2.b;
+    if (!isZero(det)) {
+        intersection.X = (line1.c * line2.b - line2.c * line1.b) / det;
+        intersection.Y = (line2.c * line1.a - line1.c * line2.a) / det;
+    }
+    return intersection;
+}
+
 } // namespace bcr
 

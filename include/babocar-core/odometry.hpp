@@ -14,9 +14,9 @@ struct Odometry {
         const float64_t s = bcr::sin(d_angle / 2);
         const float64_t c = bcr::cos(d_angle / 2);
 
-        this->twist.speed.rotate(s, c);
+        this->twist.speed = this->twist.speed.rotate(s, c);
         this->pose.pos += this->twist.speed * d_time;
-        this->twist.speed.rotate(s, c);
+        this->twist.speed = this->twist.speed.rotate(s, c);
         this->pose.angle += d_angle;
     }
 };

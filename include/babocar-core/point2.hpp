@@ -80,7 +80,7 @@ template <typename T> struct Point2 {
      **/
     template <typename T2>
     angle_t getAngle(const Vec2<T2>& other) const {
-        return bcr::atan2(other.Y - this->Y, other.X - this->X);
+        return bcr::atan2(other.Y, other.X) - bcr::atan2(this->Y, this->X);
     }
 
     /* @brief Calculates weighted average of the two points.
@@ -103,14 +103,15 @@ template <typename T> struct Point2 {
 
     bool isInside(const bbox2<T>& bbox) const;
 
-    void rotate(float64_t sin_, float64_t cos_) {
-        const Point2<T> prev = *this;
-        this->X = cos_ * prev.X - sin_ * prev.Y;
-        this->Y = sin_ * prev.X + cos_ * prev.Y;
+    Point2<T> rotate(float64_t sin_, float64_t cos_) {
+        return {
+            cos_ * this->X - sin_ * this->Y,
+            sin_ * this->X + cos_ * this->Y
+        };
     }
 
-    void rotate(radian_t angle) {
-        this->rotate(bcr::sin(angle), bcr::cos(angle));
+    Point2<T> rotate(radian_t angle) {
+        return this->rotate(bcr::sin(angle), bcr::cos(angle));
     }
 };
 
@@ -161,6 +162,15 @@ Point2<T1>& operator-=(Point2<T1>& p1, const Point2<T2>& p2) {
 template <typename T1, typename T2, typename R = decltype (std::declval<T1>() * std::declval<T2>())>
 typename std::enable_if<!is_base_of_template<Point2, T2>::value, Point2<R>>::type operator*(const Point2<T1>& p, const T2& c) {
     return Point2<R>(p.X * c, p.Y * c);
+}
+
+/* @brief Multiplies coordinates of the point with the given constant.
+ * @param c The constant.
+ * @returns The result of the multiplication.
+ **/
+template <typename T1, typename T2, typename R = decltype (std::declval<T1>() * std::declval<T2>())>
+typename std::enable_if<!is_base_of_template<Point2, T2>::value, Point2<R>>::type operator*(const T1& c, const Point2<T2>& p) {
+    return p * c;
 }
 
 /* @brief Divides coordinates of the point by the given constant.

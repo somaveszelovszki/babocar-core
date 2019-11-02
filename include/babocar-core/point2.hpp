@@ -75,12 +75,18 @@ template <typename T> struct Point2 {
         return bcr::pythag(this->X - other.X, this->Y - other.Y);
     }
 
+    /* @brief Calculates angle of this vector.
+     **/
+    angle_t getAngle(void) const {
+        return bcr::atan2(this->Y, this->X);
+    }
+
     /* @brief Calculates angle of given vector using this point as the origo.
      * @param other The vector.
      **/
     template <typename T2>
     angle_t getAngle(const Vec2<T2>& other) const {
-        return bcr::atan2(other.Y, other.X) - bcr::atan2(this->Y, this->X);
+        return bcr::atan2(other.Y - this->Y, other.X - this->X);
     }
 
     /* @brief Calculates weighted average of the two points.

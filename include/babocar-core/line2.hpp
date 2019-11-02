@@ -25,11 +25,11 @@ template <typename T> struct Line2 {
     }
 
     Line2(const Point2<T>& p1, const Point2<T>& p2) {
-        a = p1.Y - p2.Y;
-        b = p2.X - p1.X;
-        c = p1.X * p2.Y - p2.X * p1.Y;
+        this->fromPoints(p1, p2);
+    }
 
-        this->normalize();
+    Line2(const Point2<T>& p, radian_t angle) {
+        this->fromPointAndAngle(p, angle);
     }
 
     /* @brief Casts line to another type.
@@ -52,13 +52,31 @@ template <typename T> struct Line2 {
     }
 
     T getY(const T& x) const {
-        return -(a / b) * x - (c / b);
+        return isZero(b) ? -(c / a) : -(a / b) * x - (c / b);
     }
 
     T getX(const T& y) const {
-        return -(b / a) * y - (c / a);
+        return isZero(a) ? -(c / b) : -(b / a) * y - (c / a);
     }
-    
+
+    void fromPoints(const Point2<T>& p1, const Point2<T>& p2) {
+        a = p1.Y - p2.Y;
+        b = p2.X - p1.X;
+        c = p1.X * p2.Y - p2.X * p1.Y;
+
+        this->normalize();
+    }
+
+    void fromPointAndAngle(const Point2<T>& p, radian_t angle) {
+        const radian_t a = normalize360(angle);
+        if (isZero(a - PI_2)) {
+            this->fromPoints(p, { p.X, p.Y + T(1) });
+        } else if (isZero(a + PI_2)) {
+            this->fromPoints(p, { p.X, p.Y - T(1) });
+        } else {
+            this->fromPoints(p, { p.X, p.Y + T(tan(angle)) });
+        }
+    }
 };
 
 typedef Line2<float32_t> Line2f;  // 32-bit floating point line.

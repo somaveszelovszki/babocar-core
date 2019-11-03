@@ -74,7 +74,7 @@ template <typename T> struct Line2 {
         } else if (isZero(a + PI_2)) {
             this->fromPoints(p, { p.X, p.Y - T(1) });
         } else {
-            this->fromPoints(p, { p.X, p.Y + T(tan(angle)) });
+            this->fromPoints(p, { p.X + T(1), p.Y + T(tan(angle)) });
         }
     }
 };

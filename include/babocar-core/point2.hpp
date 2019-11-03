@@ -77,7 +77,7 @@ template <typename T> struct Point2 {
 
     /* @brief Calculates angle of this vector.
      **/
-    angle_t getAngle(void) const {
+    radian_t getAngle(void) const {
         return bcr::atan2(this->Y, this->X);
     }
 
@@ -85,7 +85,7 @@ template <typename T> struct Point2 {
      * @param other The vector.
      **/
     template <typename T2>
-    angle_t getAngle(const Vec2<T2>& other) const {
+    radian_t getAngle(const Vec2<T2>& other) const {
         return bcr::atan2(other.Y - this->Y, other.X - this->X);
     }
 

@@ -21,7 +21,7 @@ T distanceNorm(const Line2<T>& lineNorm, const Point2<T>& point) {
 
 template <typename T>
 std::pair<Point2<T>, Point2<T>> lineCircle_intersection(const Line2<T>& line, const Point2<T>& circleCenter, const T& circleRadius) {
-    T x_2, x_1, x_0;
+    T x_2 = T(0), x_1 = T(0), x_0 = T(0);
 
     if (isZero(line.b)) { // vertical line
         x_2 = 1;
@@ -32,11 +32,10 @@ std::pair<Point2<T>, Point2<T>> lineCircle_intersection(const Line2<T>& line, co
         const T A = -line.a / line.b;
         const T B = -line.c / line.b;
 
-        const T x_2 = 1 + A * A;
-        const T x_1 = 2 * A * B - 2 * circleCenter.X - 2 * A * circleCenter.Y;
-        const T x_0 = circleCenter.X * circleCenter.X + (B - circleCenter.Y) * (B - circleCenter.Y) - circleRadius * circleRadius;
+        x_2 = 1 + A * A;
+        x_1 = 2 * A * B - 2 * circleCenter.X - 2 * A * circleCenter.Y;
+        x_0 = circleCenter.X * circleCenter.X + (B - circleCenter.Y) * (B - circleCenter.Y) - circleRadius * circleRadius;
     }
-
 
     const std::pair<T, T> x1_2 = solve_quadratic(x_2, x_1, x_0);
 

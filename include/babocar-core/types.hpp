@@ -67,8 +67,19 @@ enum class BitOrder : uint8_t {
  */
 enum class Sign : int32_t {
     POSITIVE = 1,
+    ZERO     = 0,
     NEGATIVE = -1
 };
+
+template <typename T>
+T operator*(const T& value, Sign sign) {
+    return value * static_cast<int32_t>(sign);
+}
+
+template <typename T>
+T operator*(Sign sign, const T& value) {
+    return value * sign;
+}
 
 template < template <typename...> class base,typename derived>
 struct is_base_of_template_impl

@@ -33,6 +33,10 @@ template <typename T> struct Point2 {
         : X(_X)
         , Y(_Y) {}
 
+    static Vec2<T> normVec(radian_t angle) {
+        return Vec2<T>(T(1) * cos(angle), T(1) * sin(angle));
+    }
+
     /* @brief Casts point to another type.
      * @returns Point cast to another type.
      **/

@@ -14,7 +14,7 @@ constexpr radian_t PI_4 = PI / 4; // Pi / 4
  * @returns The absolute of the value.
  */
 template <typename T>
-inline typename std::enable_if<T::is_dim_class, T>::type abs(const T& value) {
+inline typename std::enable_if<is_unit<T>::value, T>::type abs(const T& value) {
     return value >= T::ZERO() ? value : -value;
 }
 
@@ -24,7 +24,7 @@ inline typename std::enable_if<T::is_dim_class, T>::type abs(const T& value) {
  * @returns Boolean value indicating if the value is NaN.
  */
 template <typename T>
-inline typename std::enable_if<T::is_dim_class, bool>::type isnan(const T& value) {
+inline typename std::enable_if<is_unit<T>::value, bool>::type isnan(const T& value) {
     return std::isnan(value.template get<true>());
 }
 
@@ -34,7 +34,7 @@ inline typename std::enable_if<T::is_dim_class, bool>::type isnan(const T& value
  * @returns Boolean value indicating if the value is infinity.
  */
 template <typename T>
-inline typename std::enable_if<T::is_dim_class, bool>::type isinf(const T& value) {
+inline typename std::enable_if<is_unit<T>::value, bool>::type isinf(const T& value) {
     return std::isinf(value.template get<true>());
 }
 
@@ -44,8 +44,8 @@ inline typename std::enable_if<T::is_dim_class, bool>::type isinf(const T& value
  * @param value The value.
  * @returns The sign of the value.
  */
-template <typename T, class = typename std::enable_if<T::is_dim_class>::type>
-inline typename std::enable_if<T::is_dim_class, Sign>::type sgn(const T& value) {
+template <typename T, class = typename std::enable_if<is_unit<T>::value>::type>
+inline typename std::enable_if<is_unit<T>::value, Sign>::type sgn(const T& value) {
     return value >= T::ZERO() ? Sign::POSITIVE : Sign::NEGATIVE;
 }
 
@@ -81,7 +81,7 @@ inline typename std::enable_if<T1::is_dim_class && T2::is_dim_class && T1::dim =
  * @param eps The epsilon tolerance - 0.0001f by default.
  */
 template <typename T>
-inline typename std::enable_if<T::is_dim_class, bool>::type isZero(const T& value) {
+inline typename std::enable_if<is_unit<T>::value, bool>::type isZero(const T& value) {
     return bcr::eq(value, T::ZERO());
 }
 

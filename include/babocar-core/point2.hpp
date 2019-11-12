@@ -40,9 +40,17 @@ template <typename T> struct Point2 {
     /* @brief Casts point to another type.
      * @returns Point cast to another type.
      **/
-    template <typename T2>
+    template <typename T2, typename std::enable_if<std::is_arithmetic<T>::value || (is_unit<T>::value && is_unit<T2>::value), int>::type = 0>
     operator Point2<T2>() const {
         return Point2<T2>(T2(this->X), T2(this->Y));
+    }
+
+    /* @brief Casts unit point to an arithmetic point type.
+     * @returns Point cast to another type.
+     **/
+    template <typename T2, typename std::enable_if<is_unit<T>::value && !is_unit<T2>::value, int>::type = 0>
+    operator Point2<T2>() const {
+        return Point2<T2>(T2(this->X.get()), T2(this->Y.get()));
     }
 
     /* @brief Checks if two points are equal

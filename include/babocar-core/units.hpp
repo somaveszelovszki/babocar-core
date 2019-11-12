@@ -51,6 +51,9 @@ enum class Unit : uint8_t {
     deg_to_rad      // 0.0174532925 (degrees to radians)
 };
 
+template <typename T, typename = void> struct is_unit : public std::false_type {};
+template <typename T> struct is_unit<T, typename std::enable_if<T::is_dim_class>::type> : public std::true_type {};
+
 namespace detail {
 
 constexpr float64_t RAD_TO_DEG = 57.2957795;        // Converts form radians to degrees.

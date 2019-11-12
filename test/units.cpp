@@ -4,6 +4,11 @@
 
 using namespace bcr;
 
+TEST(units, is_unit) {
+    EXPECT_FALSE(is_unit<int32_t>::value);
+    EXPECT_TRUE(is_unit<millisecond_t>::value);
+}
+
 TEST(units, unit_convert) {
     constexpr millimeter_t mm(1000.0f);
     constexpr centimeter_t cm(100.0f);
